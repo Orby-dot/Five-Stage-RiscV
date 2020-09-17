@@ -36,10 +36,10 @@ make run XSIM=1 TEST=test_pd1
 Apart from the test we provided, you also need to write your own testbench as stated in the project manual.
 
 Your testbench will need to be put in a module called `top`.
-It should be put in a file named `project/pd2/verif/tests/test_pd.v`.
+It should be put in a file named `project/pd1/verif/tests/test_pd.v`.
 We provide a stub `test_pd.v`, you may extend from that file.
 
-By creating `test_pd.v`, you will be able to run the test in `project/pd2/verif/scripts` using `make run TEST=test_decode YOUR_SIM=1`, where `YOUR_SIM` is either `VERILATOR` or `IVERILOG`.
+By creating `test_pd.v`, you will be able to run the test in `project/pd1/verif/scripts` using `make run TEST=test_pd YOUR_SIM=1`, where `YOUR_SIM` is either `VERILATOR` or `IVERILOG`.
 
 Note that the output of your testbench should match exactly as specified in the project manual.
 
