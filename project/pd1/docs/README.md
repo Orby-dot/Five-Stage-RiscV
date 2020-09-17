@@ -47,7 +47,7 @@ Make sure that your design will not report any warning during compilation.
 
 ### Verilator
 
-For verilator users, we provide the `project/pd2/verif/tests/test_pd.cpp` that drives your testbench. 
+For verilator users, we provide the `project/pd1/verif/tests/test_pd.cpp` that drives your testbench. 
 However, your testbench should not depend on the modification to the `test_pd.cpp` as it will not be packaged for submission.
 
 ## Submission
