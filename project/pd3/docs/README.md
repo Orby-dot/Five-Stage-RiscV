@@ -12,7 +12,7 @@ You will not need to fill in the `signals.h` in this PD.
 
 You will need to pass the `test_pd3` test in this PD.
 
-Make sure your register file module is placed in `project/pd3/design/code/register_file.v` and is the module is `register_file`.
+Make sure your register file module is placed in `project/pd3/design/code/register_file.v` and the module name is `register_file`.
 
 ## Testbench
 
