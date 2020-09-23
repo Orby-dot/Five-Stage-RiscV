@@ -1,6 +1,5 @@
 # PD2
 
-
 In this PD, you are required to developed the Fetch stage and Decode stage.
 You will also need to develop a testbench.
 
@@ -10,7 +9,9 @@ You will not need to fill in the `signals.h` in this PD.
 
 ## Tests
 
-You will **not** need to pass any predefined test in this PD.
+You will **not** need to pass any predefined tests in this PD.
+
+However, you will need to make sure that your testbench (`test_pd.v`) is compiled **without warnings** and that your output matches **exactly** the format specified in the project deliverable document.
 
 ## Testbench
 
@@ -23,6 +24,9 @@ Make sure your testbench correctly when running with different `MEM_PATH` suppli
 For iverilog, the command would be `make run IVERILOG=1 TEST=test_pd MEM_PATH=/path/to/memory.x`.
 
 For verilator, the command would be `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x`.
+
+For verilator users, you may use `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x VCD=1` to get a `dump.vcd` file in `project/pd2/verif/sim/verilator/test_pd/`. 
+Please be aware that `$dumpfile` and `$dumpvars` are not supported in verilator installed on ECE Linux Servers and calling them can lead to compilation errors.
 
 ## Submission
 

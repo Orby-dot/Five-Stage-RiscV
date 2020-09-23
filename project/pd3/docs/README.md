@@ -26,6 +26,11 @@ For iverilog, the command would be `make run IVERILOG=1 TEST=test_pd MEM_PATH=/p
 
 For verilator, the command would be `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x`.
 
+For verilator users, you may use `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x VCD=1` to get a `dump.vcd` file in `project/pd3/verif/sim/verilator/test_pd/`. 
+Please be aware that `$dumpfile` and `$dumpvars` are not supported in verilator installed on ECE Linux Servers and calling them can lead to compilation errors.
+
+
+
 ## Submission
 
 In `project/pd3/verif/scripts/`, use `make package YOUR_SIM=1` to package your code.
