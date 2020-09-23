@@ -13,6 +13,14 @@ You will **not** need to pass any predefined tests in this PD.
 
 However, you will need to make sure that your testbench (`test_pd.v`) is compiled **without warnings** and that your output matches **exactly** the format specified in the project deliverable document.
 
+### Warning check
+
+We include a test named `test_pd2` that you can use for testing the instantiation of your modules and it can be invoked with:
+```
+make run SIMULATOR_NAME=1 TEST=test_pd2 MEM_PATH=/path/to/memory.x
+```
+However, the test is just for you to check whether your module compiles and will not be used when grading.
+
 ## Testbench
 
 You will need to update your own testbench as specified in the project manual.
