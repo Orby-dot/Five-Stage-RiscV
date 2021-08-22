@@ -1,4 +1,6 @@
+// DO NOT rely on this file, it will be changed with a fresh one
 `include "signals.h"
+
 module top;
   wire clock, reset;
   clockgen clkg(
@@ -10,5 +12,5 @@ module top;
     .reset(reset)
   );
 
-  /* your code below */
+  `include "tracegen.v"
 endmodule

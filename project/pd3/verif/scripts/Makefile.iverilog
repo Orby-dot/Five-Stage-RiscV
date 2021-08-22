@@ -9,14 +9,14 @@ compile:
 	echo IVerilog Compilation
 	mkdir -p $(SIM_DIR)
 	cd $(SIM_DIR) && iverilog $(IVFLAGS) \
+		-D IVERILOG \
+		-D MEM_PATH=$(MEM_PATH_STR) \
+		-D TEST_VECTOR=$(TEST_VECTOR_STR) \
+		-D MEM_DEPTH=$(MEM_DEPTH) \
+		-I $(CL_ROOT)/design \
 		-o $(TOP) \
 		-s $(TOP) $(SRC) $(TEST_NAME).v \
-		-DIVERILOG \
-		-DMEM_PATH=$(MEM_PATH_STR) \
-		-DTEST_VECTOR=$(TEST_VECTOR_STR) \
-		-DMEM_DEPTH=$(MEM_DEPTH) \
-		-Wall \
-		-I$(CL_ROOT)/design $(WARN_OUTPUT)
+		-Wall $(WARN_OUTPUT) 
 	$(WARN_CHECK)
 
 run: compile
