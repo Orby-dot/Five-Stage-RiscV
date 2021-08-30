@@ -2,13 +2,11 @@
 /* Your Code Below! Enable the following define's 
  * and replace ??? with actual wires */
 // ----- signals -----
-// `define PROBE_ADDR       ???
-// `define PROBE_DATA_IN    ???
-// `define PROBE_DATA_OUT   ???
-// `define PROBE_READ_WRITE ???
+`define F_PC                ???
+`define F_INSN              ???
 
 // ----- signals -----
 
 // ----- design -----
-`define TOP_MODULE               pd
+`define TOP_MODULE                 pd
 // ----- design -----

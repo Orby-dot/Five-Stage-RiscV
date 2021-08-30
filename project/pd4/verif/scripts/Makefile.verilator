@@ -18,7 +18,7 @@ CFLAGS=-CFLAGS $(_CFLAGS)
 endif
 
 # Normal tests, not c tests
-compile:
+compile: $(SRC) $(CL_ROOT)/verif/tests/tracegen.v
 	echo Verilator Compilation
 	mkdir -p $(SIM_DIR)
 	cd $(SIM_DIR) && verilator $(VFLAGS) \
