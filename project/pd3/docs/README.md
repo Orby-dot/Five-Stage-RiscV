@@ -39,8 +39,6 @@ If you use `iverilog`, use `make package IVERILOG=1` to create a `package.iveril
 
 If you use `verilator`, use `make package VERILATOR=1` to create a `package.verilator.tar.gz`
 
-If you use `Vivado xsim`, use `make package XSIM=1` to create a `package.xsim.tar.gz`
-
 You will need to upload the `package.*.tar.gz` to learn when done.
 
 Note that you must set your simulator properly as the package name will include

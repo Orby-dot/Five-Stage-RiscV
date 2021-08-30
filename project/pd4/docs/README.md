@@ -7,27 +7,11 @@ You will also need to develop a testbench.
 
 You will need to fill in the `signals.h` in this PD for the following probes.
 
-Note that the `PC` is pre-defined for synthesis purpose.
-
-You should replace `PC` with your pc signal.
-
-```
-`define PC                         pc
-`define INSN                       ???
-`define REGISTER_WRITE_ENABLE      ???
-`define REGISTER_WRITE_DESTINATION ???
-`define REGISTER_WRITE_DATA        ???
-`define REGISTER_READ_RS1          ???
-`define REGISTER_READ_RS2          ???
-`define REGISTER_READ_RS1_DATA     ???
-`define REGISTER_READ_RS2_DATA     ???
-```
-
 Please note that unlike in PD0, we only **monitor** these probes instead of driving the probes.
 
 ## Tests
 
-Make sure you pass the `test_pd4` test.
+Make sure you pass the `test_pd` test.
 
 ## Testbench
 
@@ -61,8 +45,6 @@ In `project/pd4/verif/scripts/`, use `make package YOUR_SIM=1` to package your c
 If you use `iverilog`, use `make package IVERILOG=1` to create a `package.iverilog.tar.gz`
 
 If you use `verilator`, use `make package VERILATOR=1` to create a `package.verilator.tar.gz`
-
-If you use `Vivado xsim`, use `make package XSIM=1` to create a `package.xsim.tar.gz`
 
 You will need to upload the `package.*.tar.gz` to learn when done.
 

@@ -5,32 +5,13 @@ You will also need to develop a testbench.
 
 ## Probes
 
-You will need to fill in the `signals.h` in this PD for the following probes.
-
-Note that the `PC` is pre-defined for synthesis purpose.
-
-You should replace `PC` with your pc signal.
-
-```
-`define PC                         pc
-`define INSN                       ???
-`define REGISTER_WRITE_ENABLE      ???
-`define REGISTER_WRITE_DESTINATION ???
-`define REGISTER_WRITE_DATA        ???
-`define REGISTER_READ_RS1          ???
-`define REGISTER_READ_RS2          ???
-`define REGISTER_READ_RS1_DATA     ???
-`define REGISTER_READ_RS2_DATA     ???
-```
+You will need to fill in the `signals.h` in this PD for the probes.
 
 Please note that unlike in PD0, we only **monitor** these probes instead of driving the probes.
 
-Also, please note that `PC` and `INSN` should be the program counter value and instruction at **Fetch** stage.
-
-
 ## Tests
 
-Make sure you pass the `test_pd5` test.
+Make sure you pass the `test_pd` test.
 
 ## Testbench
 
@@ -55,7 +36,7 @@ For this PD, when you finish your design you will be able to test your code for 
 
 To test the synthesizability of your code, go to `project/pd5/build/scripts` and execute `make synthesis-test`.
 
-A successfully synthesis should produce a `design.dcp` in `project/pd4/build/scripts`.
+A successfully synthesis should produce a `design.dcp` in `project/pd5/build/scripts`.
 
 You will need to have `Vivado` installed for this purpose.
 
@@ -66,8 +47,6 @@ In `project/pd5/verif/scripts/`, use `make package YOUR_SIM=1` to package your c
 If you use `iverilog`, use `make package IVERILOG=1` to create a `package.iverilog.tar.gz`
 
 If you use `verilator`, use `make package VERILATOR=1` to create a `package.verilator.tar.gz`
-
-If you use `Vivado xsim`, use `make package XSIM=1` to create a `package.xsim.tar.gz`
 
 You will need to upload the `package.*.tar.gz` to learn when done.
 
