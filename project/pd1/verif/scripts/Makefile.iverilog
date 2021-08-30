@@ -37,7 +37,7 @@ $(SIM_DIR)/$(TOP): $(SRC) $(CL_ROOT)/verif/tests/tracegen.v Makefile.iverilog
 
 run: $(SIM_DIR)/$(TOP)
 	echo IVerilog Run
-	cd $(SIM_DIR) && vvp $(TOP)
+	cd $(SIM_DIR) && vvp $(TOP) | bash $(CL_ROOT)/verif/scripts/check_fatal.sh
 
 clean:
 	rm -rf $(SIM_DIR)

@@ -12,8 +12,8 @@ task check_F;
     pc              = p[`__F_PC];
     insn            = p[`__F_INSN];
     if(
-      pc != dut.core.`F_PC ||
-      insn != dut.core.`F_INSN 
+      (^pc !== 1'bx && pc !== dut.core.`F_PC) ||
+      (^insn !== 1'bx && insn !== dut.core.`F_INSN) 
     ) begin
       $sformat(msg, "F stage mismatch: expected PC=%x, INSN=%x, got PC=%x, INSN=%x", 
         pc, insn,
@@ -53,15 +53,15 @@ task check_D;
     imm             = p[`__D_IMM];
     shamt           = p[`__D_SHAMT];
     if(
-      pc != dut.core.`D_PC ||
-      opcode != dut.core.`D_OPCODE ||
-      rd != dut.core.`D_RD ||
-      rs1 != dut.core.`D_RS1 ||
-      rs2 != dut.core.`D_RS2 ||
-      funct3 != dut.core.`D_FUNCT3 ||
-      funct7 != dut.core.`D_FUNCT7 ||
-      imm != dut.core.`D_IMM ||
-      shamt != dut.core.`D_SHAMT 
+      (^pc !== 1'bx && pc !== dut.core.`D_PC) ||
+      (^opcode !== 1'bx && opcode !== dut.core.`D_OPCODE) ||
+      (^rd !== 1'bx && rd !== dut.core.`D_RD) ||
+      (^rs1 !== 1'bx && rs1 !== dut.core.`D_RS1) ||
+      (^rs2 !== 1'bx && rs2 !== dut.core.`D_RS2) ||
+      (^funct3 !== 1'bx && funct3 !== dut.core.`D_FUNCT3) ||
+      (^funct7 !== 1'bx && funct7 !== dut.core.`D_FUNCT7) ||
+      (^imm !== 1'bx && imm !== dut.core.`D_IMM) ||
+      (^shamt !== 1'bx && shamt !== dut.core.`D_SHAMT) 
     ) begin
       $sformat(msg, "D stage mismatch: expected PC=%x, OPCODE=%x, RD=%x, RS1=%x, RS2=%x, FUNCT3=%x, FUNCT7=%x, IMM=%x, SHAMT=%x, got PC=%x, OPCODE=%x, RD=%x, RS1=%x, RS2=%x, FUNCT3=%x, FUNCT7=%x, IMM=%x, SHAMT=%x", 
         pc, opcode, rd, rs1, rs2, funct3, funct7, imm, shamt,

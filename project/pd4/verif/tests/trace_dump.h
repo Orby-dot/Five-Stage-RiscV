@@ -10,7 +10,7 @@ integer __trace_fd;
 initial begin
   __trace_fd = $fopen(`TRACE_FILE);
 end
-always @(posedge clock) begin
+always @(negedge clock) begin
   if(reset == 0) begin
   // F stage trace dump
   $fwrite(__trace_fd, "[F] %x %x\n",

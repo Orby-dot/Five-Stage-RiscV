@@ -5,7 +5,7 @@ You will also need to develop a testbench.
 
 ## Probes
 
-You will not need to fill in the `signals.h` in this PD.
+You will need to fill in the `signals.h` in this PD.
 
 ## Tests
 

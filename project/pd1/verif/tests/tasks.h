@@ -12,8 +12,8 @@ task check_F;
     pc              = p[`__F_PC];
     insn            = p[`__F_INSN];
     if(
-      pc != dut.core.`F_PC ||
-      insn != dut.core.`F_INSN 
+      (^pc !== 1'bx && pc !== dut.core.`F_PC) ||
+      (^insn !== 1'bx && insn !== dut.core.`F_INSN) 
     ) begin
       $sformat(msg, "F stage mismatch: expected PC=%x, INSN=%x, got PC=%x, INSN=%x", 
         pc, insn,

@@ -16,7 +16,7 @@ You need to fill in the path to the following probes in `project/pd1/design/sign
 
 ## Macros
 
-We provide a `LINE_COUNT` macro that represents the number of lines in the program file.
+We provide a `\`LINE_COUNT` macro that represents the number of lines in the program file.
 
 ## Tests
 

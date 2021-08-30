@@ -36,6 +36,7 @@ compile: $(SRC) $(CL_ROOT)/verif/tests/tracegen.v
 		+define+GEN_TRACE=$(GEN_TRACE) \
 		+define+TRACE_FILE=$(TRACE_FILE_STR)\
 		+define+LINE_COUNT=$(LINE_COUNT) \
+		+define+VCD_FILE=$(VCD_FILE_STR) \
 		+define+PATTERN_FILE=$(PATTERN_FILE_STR) \
 		+define+PATTERN_LINE_COUNT=$(PATTERN_LINE_COUNT) \
 		+define+PATTERN_DUMP_FILE=$(PATTERN_DUMP_FILE_STR) \

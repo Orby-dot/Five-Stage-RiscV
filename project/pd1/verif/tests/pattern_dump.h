@@ -6,7 +6,7 @@ reg[128 * 1 - 1:0] pattern_dump;
 initial begin
   __dump_fd = $fopen(`PATTERN_DUMP_FILE);
 end
-always @(posedge clock) begin : pattern_dump_proc
+always @(negedge clock) begin : pattern_dump_proc
   reg[127:0] stage;
   if(reset == 0) begin
     // F stage

@@ -18,14 +18,16 @@ MEM_DEPTH             ?= 1048576
 TEST_VECTOR           ?= $(CL_ROOT)/verif/data/test_vector.x
 TEST_VECTOR_STR       ?= \"$(TEST_VECTOR)\"
 TRACE_FILE				    ?= $(MEM_PATH_NOT_DIR:x=trace)
+VCD_FILE				      ?= $(MEM_PATH_NOT_DIR:x=vcd)
+VCD_FILE_STR			    ?= \"$(VCD_FILE)\"
 PATTERN_FILE          ?= $(MEM_PATH:x=pattern) # Replace MEM_PATH .x with .pattern by default
-PATTERN_LINE_COUNT    ?= 0 $(shell echo `wc -l < $(PATTERN_FILE)`)
+PATTERN_LINE_COUNT    ?= $(shell echo `wc -l < $(PATTERN_FILE)`)
 PATTERN_FILE_STR      ?= \"$(abspath $(PATTERN_FILE))\"
 PATTERN_DUMP_FILE			?= $(MEM_PATH_NOT_DIR:x=dump)# Replace MEM_PATH .x with .pattern by default
 PATTERN_DUMP_FILE_STR ?= \"$(PATTERN_DUMP_FILE)\"
 PATTERN_DUMP					?= 0
 PATTERN_CHECK					?= 0
-GEN_TRACE             ?= 0
+GEN_TRACE             ?= 1
 TIMEOUT               ?= 50000
 TRACE_FILE_STR        ?= \"$(TRACE_FILE)\"
 

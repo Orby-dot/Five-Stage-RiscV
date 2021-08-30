@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
   Verilated::traceEverOn(true);
   VerilatedVcdC* tfp = new VerilatedVcdC;
   top->trace(tfp, 99);
-  tfp->open("dump.vcd");
+  tfp->open(VCD_FILE);
 #endif
 
   // set the scope correctly so that we can access the clock in C testbench

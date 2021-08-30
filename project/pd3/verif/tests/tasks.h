@@ -12,8 +12,8 @@ task check_F;
     pc              = p[`__F_PC];
     insn            = p[`__F_INSN];
     if(
-      pc != dut.core.`F_PC ||
-      insn != dut.core.`F_INSN 
+      (^pc !== 1'bx && pc !== dut.core.`F_PC) ||
+      (^insn !== 1'bx && insn !== dut.core.`F_INSN) 
     ) begin
       $sformat(msg, "F stage mismatch: expected PC=%x, INSN=%x, got PC=%x, INSN=%x", 
         pc, insn,
@@ -53,15 +53,15 @@ task check_D;
     imm             = p[`__D_IMM];
     shamt           = p[`__D_SHAMT];
     if(
-      pc != dut.core.`D_PC ||
-      opcode != dut.core.`D_OPCODE ||
-      rd != dut.core.`D_RD ||
-      rs1 != dut.core.`D_RS1 ||
-      rs2 != dut.core.`D_RS2 ||
-      funct3 != dut.core.`D_FUNCT3 ||
-      funct7 != dut.core.`D_FUNCT7 ||
-      imm != dut.core.`D_IMM ||
-      shamt != dut.core.`D_SHAMT 
+      (^pc !== 1'bx && pc !== dut.core.`D_PC) ||
+      (^opcode !== 1'bx && opcode !== dut.core.`D_OPCODE) ||
+      (^rd !== 1'bx && rd !== dut.core.`D_RD) ||
+      (^rs1 !== 1'bx && rs1 !== dut.core.`D_RS1) ||
+      (^rs2 !== 1'bx && rs2 !== dut.core.`D_RS2) ||
+      (^funct3 !== 1'bx && funct3 !== dut.core.`D_FUNCT3) ||
+      (^funct7 !== 1'bx && funct7 !== dut.core.`D_FUNCT7) ||
+      (^imm !== 1'bx && imm !== dut.core.`D_IMM) ||
+      (^shamt !== 1'bx && shamt !== dut.core.`D_SHAMT) 
     ) begin
       $sformat(msg, "D stage mismatch: expected PC=%x, OPCODE=%x, RD=%x, RS1=%x, RS2=%x, FUNCT3=%x, FUNCT7=%x, IMM=%x, SHAMT=%x, got PC=%x, OPCODE=%x, RD=%x, RS1=%x, RS2=%x, FUNCT3=%x, FUNCT7=%x, IMM=%x, SHAMT=%x", 
         pc, opcode, rd, rs1, rs2, funct3, funct7, imm, shamt,
@@ -91,10 +91,10 @@ task check_R;
     read_rs1_data   = p[`__R_READ_RS1_DATA];
     read_rs2_data   = p[`__R_READ_RS2_DATA];
     if(
-      read_rs1 != dut.core.`R_READ_RS1 ||
-      read_rs2 != dut.core.`R_READ_RS2 ||
-      read_rs1_data != dut.core.`R_READ_RS1_DATA ||
-      read_rs2_data != dut.core.`R_READ_RS2_DATA 
+      (^read_rs1 !== 1'bx && read_rs1 !== dut.core.`R_READ_RS1) ||
+      (^read_rs2 !== 1'bx && read_rs2 !== dut.core.`R_READ_RS2) ||
+      (^read_rs1_data !== 1'bx && read_rs1_data !== dut.core.`R_READ_RS1_DATA) ||
+      (^read_rs2_data !== 1'bx && read_rs2_data !== dut.core.`R_READ_RS2_DATA) 
     ) begin
       $sformat(msg, "R stage mismatch: expected READ_RS1=%x, READ_RS2=%x, READ_RS1_DATA=%x, READ_RS2_DATA=%x, got READ_RS1=%x, READ_RS2=%x, READ_RS1_DATA=%x, READ_RS2_DATA=%x", 
         read_rs1, read_rs2, read_rs1_data, read_rs2_data,
@@ -122,9 +122,9 @@ task check_E;
     alu_res         = p[`__E_ALU_RES];
     br_taken        = p[`__E_BR_TAKEN];
     if(
-      pc != dut.core.`E_PC ||
-      alu_res != dut.core.`E_ALU_RES ||
-      br_taken != dut.core.`E_BR_TAKEN 
+      (^pc !== 1'bx && pc !== dut.core.`E_PC) ||
+      (^alu_res !== 1'bx && alu_res !== dut.core.`E_ALU_RES) ||
+      (^br_taken !== 1'bx && br_taken !== dut.core.`E_BR_TAKEN) 
     ) begin
       $sformat(msg, "E stage mismatch: expected PC=%x, ALU_RES=%x, BR_TAKEN=%x, got PC=%x, ALU_RES=%x, BR_TAKEN=%x", 
         pc, alu_res, br_taken,

@@ -4,7 +4,7 @@ initial begin:pre_check
   $readmemh(`PATTERN_FILE, pattern);
 end
 integer tick;
-always @(posedge clock) begin : tick_check
+always @(negedge clock) begin : tick_check
   reg res, tick_ok, correct;
   reg[4095:0] msg;
   correct = 1;
@@ -32,7 +32,7 @@ always @(posedge clock) begin : tick_check
       $display("%0s", msg);
     end
     if(correct != 1) begin
-      $finish;
+      $fatal;
     end else  if(tick == `PATTERN_LINE_COUNT - 1) begin
       $display("Check passed");
       $finish;
