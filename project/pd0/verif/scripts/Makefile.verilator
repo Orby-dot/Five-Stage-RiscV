@@ -8,8 +8,8 @@ _CFLAGS=
 VCD ?= 0
 
 ifeq ($(VCD), 1)
-VFLAGS+= --trace +define+VCD
-_CFLAGS+= -DVCD -DVCD_FILE=\"test_pd0.vcd\"
+VFLAGS+= --trace
+_CFLAGS+= -DVCD -CFLAGS -DVCD_FILE=test_pd0.vcd
 endif
 
 ifneq ($(_CFLAGS), )
