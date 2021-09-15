@@ -4,7 +4,8 @@
 #ifdef VCD
 #include "verilated_vcd_c.h"
 #define mkstring(x) #x
-#define VCD_FILE_STR mkstring(VCD_FILE)
+#define mkstring2(x) mkstring(x)
+#define VCD_FILE_STR mkstring2(VCD_FILE)
 #endif
 #include "Vtop.h"
 #include "svdpi.h"
