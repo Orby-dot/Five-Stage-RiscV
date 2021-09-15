@@ -6,7 +6,7 @@ You will also need to develop a testbench.
 
 ## Probes
 
-You will not need to fill in the `signals.h` in this PD.
+You will need to fill in the `signals.h` in this PD.
 
 ## Tests
 
@@ -26,7 +26,7 @@ For iverilog, the command would be `make run IVERILOG=1 TEST=test_pd MEM_PATH=/p
 
 For verilator, the command would be `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x`.
 
-For verilator users, you may use `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x VCD=1` to get a `dump.vcd` file in `project/pd3/verif/sim/verilator/test_pd/`. 
+For verilator users, you may use `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x VCD=1` to get a `.vcd` file in `project/pd3/verif/sim/verilator/test_pd/`. 
 Please be aware that `$dumpfile` and `$dumpvars` are not supported in verilator installed on ECE Linux Servers and calling them can lead to compilation errors.
 
 
@@ -38,8 +38,6 @@ In `project/pd3/verif/scripts/`, use `make package YOUR_SIM=1` to package your c
 If you use `iverilog`, use `make package IVERILOG=1` to create a `package.iverilog.tar.gz`
 
 If you use `verilator`, use `make package VERILATOR=1` to create a `package.verilator.tar.gz`
-
-If you use `Vivado xsim`, use `make package XSIM=1` to create a `package.xsim.tar.gz`
 
 You will need to upload the `package.*.tar.gz` to learn when done.
 
