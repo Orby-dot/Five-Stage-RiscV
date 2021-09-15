@@ -1,4 +1,6 @@
+// DO NOT rely on this file, it will be changed with a fresh one
 `include "signals.h"
+
 module top;
   wire clock, reset;
   clockgen clkg(
@@ -9,6 +11,12 @@ module top;
     .clock(clock),
     .reset(reset)
   );
+  `ifdef VCD
+  initial begin
+    $dumpfile(`VCD_FILE);
+    $dumpvars;
+  end
+  `endif
 
-  /* your code below */
+  `include "tracegen.v"
 endmodule
