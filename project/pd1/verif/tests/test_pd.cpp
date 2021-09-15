@@ -3,6 +3,8 @@
 #include <verilated.h>
 #ifdef VCD
 #include "verilated_vcd_c.h"
+#define mkstring(x) #x
+#define VCD_FILE_STR mkstring(VCD_FILE)
 #endif
 #include "Vtop.h"
 #include "svdpi.h"
@@ -24,7 +26,7 @@ int main(int argc, char** argv) {
   Verilated::traceEverOn(true);
   VerilatedVcdC* tfp = new VerilatedVcdC;
   top->trace(tfp, 99);
-  tfp->open(VCD_FILE);
+  tfp->open(VCD_FILE_STR);
 #endif
 
   // set the scope correctly so that we can access the clock in C testbench
