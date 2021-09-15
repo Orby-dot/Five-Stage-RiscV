@@ -130,11 +130,11 @@ module top;
   end
   `endif
 
-  `ifdef VCD
+  `ifdef VCD `ifdef IVERILOG
   initial begin
     $dumpfile(`VCD_FILE);
     $dumpvars;
   end
-  `endif
+  `endif `endif
 
 endmodule
