@@ -4,7 +4,7 @@
 integer __dump_fd;
 reg[128 * 4 - 1:0] pattern_dump;
 initial begin
-  __dump_fd = $fopen(`PATTERN_DUMP_FILE);
+  __dump_fd = $fopen(`PATTERN_DUMP_FILE, "w");
 end
 always @(negedge clock) begin : pattern_dump_proc
   reg[127:0] stage;
