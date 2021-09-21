@@ -8,7 +8,7 @@
 */
 integer __trace_fd;
 initial begin
-  __trace_fd = $fopen(`TRACE_FILE);
+  __trace_fd = $fopen(`TRACE_FILE, "w");
 end
 always @(negedge clock) begin
   if(reset == 0) begin
