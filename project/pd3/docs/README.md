@@ -22,8 +22,6 @@ Make sure that your design will not report any warning during compilation.
 
 Make sure your testbench correctly when running with different `MEM_PATH` supplied to the `make` command.
 
-For iverilog, the command would be `make run IVERILOG=1 TEST=test_pd MEM_PATH=/path/to/memory.x`.
-
 For verilator, the command would be `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x`.
 
 For verilator users, you may use `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x VCD=1` to get a `.vcd` file in `project/pd3/verif/sim/verilator/test_pd/`. 
@@ -32,14 +30,9 @@ Please be aware that `$dumpfile` and `$dumpvars` are not supported in verilator 
 
 
 ## Submission
+In `project/pd1/verif/scripts/`, use `make package VERILATOR=1` to package your code and create a `package.verilator.tar.gz`
 
-In `project/pd3/verif/scripts/`, use `make package YOUR_SIM=1` to package your code.
-
-If you use `iverilog`, use `make package IVERILOG=1` to create a `package.iverilog.tar.gz`
-
-If you use `verilator`, use `make package VERILATOR=1` to create a `package.verilator.tar.gz`
-
-You will need to upload the `package.*.tar.gz` to learn when done.
+You will need to upload the `package.verilator.tar.gz` to learn when done.
 
 Note that you must set your simulator properly as the package name will include
 information about the simulator you are using.

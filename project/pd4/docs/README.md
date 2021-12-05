@@ -21,11 +21,9 @@ Make sure that your design will not report any warning during compilation.
 
 Make sure your testbench correctly when running with different `MEM_PATH` supplied to the `make` command.
 
-For iverilog, the command would be `make run IVERILOG=1 TEST=test_pd MEM_PATH=/path/to/memory.x`.
+The command would be `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x`.
 
-For verilator, the command would be `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x`.
-
-For verilator users, you may use `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x VCD=1` to get a `.vcd` file in `project/pd4/verif/sim/verilator/test_pd/`. 
+You may use `make run VERILATOR=1 TEST=test_pd MEM_PATH=/path/to/memory.x VCD=1` to get a `.vcd` file in `project/pd4/verif/sim/verilator/test_pd/`. 
 Please be aware that `$dumpfile` and `$dumpvars` are not supported in verilator installed on ECE Linux Servers and calling them can lead to compilation errors.
 
 ## Synthesis
@@ -40,11 +38,9 @@ You will need to have `Vivado` installed for this purpose.
 
 ## Submission
 
-In `project/pd4/verif/scripts/`, use `make package YOUR_SIM=1` to package your code.
+In `project/pd1/verif/scripts/`, use `make package VERILATOR=1` to package your code and create a `package.verilator.tar.gz`
 
-If you use `iverilog`, use `make package IVERILOG=1` to create a `package.iverilog.tar.gz`
-
-If you use `verilator`, use `make package VERILATOR=1` to create a `package.verilator.tar.gz`
+You will need to upload the `package.verilator.tar.gz` to learn when done.
 
 You will need to upload the `package.*.tar.gz` to learn when done.
 

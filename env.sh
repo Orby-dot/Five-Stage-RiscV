@@ -7,6 +7,9 @@ export IVERILOG_VERSION=$(iverilog -v 2>/dev/null | head -n 1)
 echo -e "iverilog Version (\$IVERILOG_VERSION):\t" $IVERILOG_VERSION
 export VERILATOR_VERSION=$(verilator --version 2>/dev/null | head -n 1)
 echo -e "verilator Version (\$VERILATOR_VERSION):\t" $VERILATOR_VERSION
+if [[ $VERILATOR_VERSION != *"4.210"* ]]; then
+  echo -e "\033[0;31mERROR: verilator must be version 4.210\033[0m"
+fi
 export VIVADO_VERSION=$(vivado -version 2>/dev/null | head -n 1)
 echo -e "Vivado Version (\$VIVADO_VERSION): \t" $VIVADO_VERSION
 echo "===== Computer Architecture Course Environment Done  ====="
