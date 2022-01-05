@@ -21,7 +21,7 @@ It is possible to install some or all of them on your local machine
 1. You will need a Linux bash environment to execute the tests. For example, `Ubuntu` or other distributions of Linux should work fine.
 2. You will need `make` installed in your distribution to execute the tests.
 3. You will need `git` the clone the repository.
-4. You will need one of `verilator`, `iverilog` and `Vivado xsim` to properly run your code. Refer to the `verilog-tutorial` manual for installation guidelines on `verilator` and `iverilog`. Make sure that they are present in your `$PATH` environment variable so that it can be detected.
+4. You will need one of `verilator` to properly run your code. Refer to the `verilog-tutorial` manual for installation guidelines on `verilator` and `iverilog`. Make sure that they are present in your `$PATH` environment variable so that it can be detected.
 
 ## Paths
 
@@ -45,7 +45,7 @@ $ source env.sh
 Important: this script should be used as `source env.sh` and should only be used in bash
 Project Root ($PROJECT_ROOT):		/home/your/path/to/repo/carch-project
 iverilog Version ($IVERILOG_VERSION):	 Icarus Verilog version 10.3 (stable) (v10_3)
-verilator Version ($VERILATOR_VERSION):	 Verilator 3.916 2017-11-25 rev verilator_3_914-65-g0478dbd
+verilator Version ($VERILATOR_VERSION):	Verilator 4.210 2021-07-07 rev v4.210-19-gde408a5e Verilator 3.916 2017-11-25 rev verilator_3_914-65-g0478dbd
 Vivado Version ($VIVADO_VERSION): 	 Vivado v2018.3 (64-bit)
 ===== Computer Architecture Course Environment Done  =====
 ```

@@ -48,13 +48,9 @@ However, your testbench should not depend on the modification to the `test_pd.cp
 
 ## Submission
 
-In `project/pd1/verif/scripts/`, use `make package YOUR_SIM=1` to package your code.
+In `project/pd1/verif/scripts/`, use `make package VERILATOR=1` to package your code and create a `package.verilator.tar.gz`
 
-If you use `iverilog`, use `make package IVERILOG=1` to create a `package.iverilog.tar.gz`
-
-If you use `verilator`, use `make package VERILATOR=1` to create a `package.verilator.tar.gz`
-
-You will need to upload the `package.*.tar.gz` to learn when done.
+You will need to upload the `package.verilator.tar.gz` to learn when done.
 
 Note that you must set your simulator properly as the package name will include
 information about the simulator you are using.

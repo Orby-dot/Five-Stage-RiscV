@@ -1,9 +1,9 @@
 SRCLIST = $(shell cat $(CL_ROOT)/verif/scripts/design.f)
-SRC = $(addprefix $(CL_ROOT)/design/code/, $(SRCLIST)) $(CL_ROOT)/verif/tests/clockgen.v $(CL_ROOT)/design/design_wrapper.v
+SRC = $(addprefix $(CL_ROOT)/design/code/, $(SRCLIST)) $(CL_ROOT)/verif/tests/clockgen.sv $(CL_ROOT)/design/design_wrapper.v
 VFLAGS = 
 TOP = top
 PROG=$(CL_ROOT)/verif/tests/data/rv32ui-p-add.x
-_CFLAGS=
+_CFLAGS=-DMEM_DEPTH=$(MEM_DEPTH) -DMEM_PATH=$(MEM_PATH_STR)
 
 VCD ?= 0
 
@@ -14,7 +14,11 @@ _CFLAGS+= -DVCD -CFLAGS -DVCD_FILE=$(VCD_FILE_STR)
 endif
 
 ifneq ($(_CFLAGS), )
-CFLAGS=-CFLAGS $(_CFLAGS)
+CFLAGS=$(addprefix -CFLAGS ,$(_CFLAGS))
+endif
+
+ifeq (,$(findstring 4.210,$(VERILATOR_VERSION)))
+  $(error ERROR: verilator should be version 4.210)
 endif
 
 # Normal tests, not c tests
@@ -22,9 +26,11 @@ compile: $(SRC) $(CL_ROOT)/verif/tests/tracegen.v
 	echo Verilator Compilation
 	mkdir -p $(SIM_DIR)
 	cd $(SIM_DIR) && verilator $(VFLAGS) \
+		+1800-2012ext+sv \
+		+1364-2005ext+v \
 		$(CFLAGS) \
 		--cc $(SRC) \
-		$(TEST_NAME).v \
+		$(TEST_NAME).sv \
 		--exe $(TEST_NAME).cpp  \
 		-I$(CL_ROOT)/design \
 		-I$(CL_ROOT)/verif/tests \
