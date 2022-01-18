@@ -10,7 +10,7 @@ VCD ?= 0
 # Setup VCD flags for verilator
 ifeq ($(VCD), 1)
 VFLAGS+= --trace
-_CFLAGS+= -DVCD -CFLAGS -DVCD_FILE=$(VCD_FILE_STR)
+_CFLAGS+= -DVCD -DVCD_FILE=$(VCD_FILE_STR)
 endif
 
 ifneq ($(_CFLAGS), )
