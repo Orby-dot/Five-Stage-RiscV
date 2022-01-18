@@ -41,7 +41,7 @@ WARN_OUTPUT =
 WARN_CHECK  = 
 endif
 
-EXTRA_PACKAGE_FILES := ./verif/tests/test_pd.v
+EXTRA_PACKAGE_FILES := 
 
 include ${PROJECT_ROOT}/common/verif/tb/scripts/Makefile.common.inc
 
