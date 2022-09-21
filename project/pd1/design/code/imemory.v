@@ -2,36 +2,35 @@ module imemory
 (
   input wire              clock,
   input wire    [31:0]    address,
-  input wire    [31:0]    read_write,
+  input wire              read_write,
   input wire    [31:0]    data_in,
   output wire   [31:0]    data_out
 );
 
 //8 byte chunks
-reg [7:0] memory [MEM_DEPTH]; //actual main memory
-
+reg [7:0] memory [`MEM_DEPTH]; //actual main memory
+integer x;
   // load binary
   initial begin
     // temp array
     reg [31:0]temp_array [`LINE_COUNT];
 
     // load data into temp array
-    readmemh(`MEM_PATH, temp_array);
+    $readmemh(`MEM_PATH, temp_array);
     
     // move data into main memory
-    genvar x;
     for(x= 0 ; x < `LINE_COUNT ; x = x +1)begin
-      memory[x/4] <= temp_array[x][7:0];
-      memory[x/4 + 1] <= temp_array[x][15:8];
-      memory[x/4+ 2] <= temp_array[x][23:16];
-      memory[x/4 + 3] <= temp_array[x][31:24];
+      memory[x/4] = temp_array[x][7:0];
+      memory[x/4 + 1] = temp_array[x][15:8];
+      memory[x/4+ 2] = temp_array[x][23:16];
+      memory[x/4 + 3] = temp_array[x][31:24];
     end
 
   end
 
   // choose to read or write
   always @(posedge clock) begin
-  if (address) begin
+  //if (address) begin
     if (read_write) begin
       //write
       //so this is kinda messy because of little endian
@@ -50,7 +49,7 @@ reg [7:0] memory [MEM_DEPTH]; //actual main memory
       data_out[23:16] <= memory[address + 2];
       data_out[31:24] <= memory[address + 3];
     end
-  end
+  //end
 
   end
 endmodule
