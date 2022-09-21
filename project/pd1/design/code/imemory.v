@@ -16,7 +16,7 @@ reg [7:0] memory [MEM_DEPTH]; //actual main memory
     reg [31:0]temp_array [`LINE_COUNT];
 
     // load data into temp array
-    readmemh(MEM_PATH, temp_array);
+    readmemh(`MEM_PATH, temp_array);
     
     // move data into main memory
     genvar x;
