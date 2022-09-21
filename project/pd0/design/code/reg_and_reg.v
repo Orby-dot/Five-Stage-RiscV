@@ -9,7 +9,19 @@ module reg_and_reg(
   input wire y,
   output reg z
 );
-  always @(*) begin
-    z = x & y;
+  reg xin;
+  reg yin;
+  always @(posedge clock) begin
+    if(reset) begin
+      z <= 0;
+      $display("Reset z=%u",z);
+    end
+    else
+    begin
+      xin <=x;
+      yin <=y;
+      z <= yin & xin;
+      $display("z =%u , xin=%u, yin =%u , x= %u, y = %u",z,xin,yin,x,y);
+    end
   end
 endmodule

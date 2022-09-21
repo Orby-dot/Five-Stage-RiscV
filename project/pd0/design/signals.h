@@ -6,14 +6,14 @@
 /* Your Code Below! Enable the following define's 
  * and replace ??? with actual wires */
 // ----- signals -----
-// `define PROBE_EX33_ARESET  ???
-// `define PROBE_EX33_X       ???
-// `define PROBE_EX33_Y       ???
-// `define PROBE_EX33_Z       ???
+`define PROBE_EX33_ARESET  areset
+`define PROBE_EX33_X       reg_and_arst_x
+`define PROBE_EX33_Y       reg_and_arst_y
+`define PROBE_EX33_Z       reg_and_arst_z
 // 
-// `define PROBE_EX34_X       ???
-// `define PROBE_EX34_Y       ???
-// `define PROBE_EX34_Z       ???
+ `define PROBE_EX34_X       reg_and_reg_x
+ `define PROBE_EX34_Y       reg_and_reg_y
+ `define PROBE_EX34_Z       reg_and_reg_z
 // ----- signals -----
 
 // ----- design -----

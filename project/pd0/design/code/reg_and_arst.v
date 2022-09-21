@@ -9,7 +9,14 @@ module reg_and_arst(
   input  wire y,
   output reg  z
 );
-  always @(*) begin
+
+  always @(posedge clock, posedge areset) begin
+    if(areset)begin
+      z=0;
+    end
+    else
+    begin
     z = x & y;
+    end
   end
 endmodule
