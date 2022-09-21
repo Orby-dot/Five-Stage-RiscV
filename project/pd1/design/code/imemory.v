@@ -21,10 +21,10 @@ reg [7:0] memory [MEM_DEPTH]; //actual main memory
     // move data into main memory
     genvar x;
     for(x= 0 ; x < `LINE_COUNT ; x = x +1)begin
-      memory[x/4] <= temp_array[7:0][x];
-      memory[x/4 + 1] <= temp_array[15:8][x];
-      memory[x/4+ 2] <= temp_array[23:16][x];
-      memory[x/4 + 3] <= temp[31:24][x];
+      memory[x/4] <= temp_array[x][7:0];
+      memory[x/4 + 1] <= temp_array[x][15:8];
+      memory[x/4+ 2] <= temp_array[x][23:16];
+      memory[x/4 + 3] <= temp_array[x][31:24];
     end
 
   end
