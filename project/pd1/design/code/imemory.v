@@ -45,6 +45,10 @@ reg [7:0] memory [MEM_DEPTH]; //actual main memory
       memory[address + 3] <= data_in[31:24];
     end else begin
       // read
+      data_out[7:0] <= memory[address];
+      data_out[15:8] <= memory[address + 1];
+      data_out[23:16] <= memory[address + 2];
+      data_out[31:24] <= memory[address + 3];
     end
   end
 
