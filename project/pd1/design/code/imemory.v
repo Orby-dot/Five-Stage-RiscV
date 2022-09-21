@@ -1,5 +1,4 @@
 module imemory
-#(parameter  MEM_DEPTH = 32'd1048576)
 (
   input wire              clock,
   input wire    [31:0]    address,
@@ -17,7 +16,7 @@ reg [7:0] memory [MEM_DEPTH]; //actual main memory
     [type] temp_array;
 
     // load data into temp array
-    readmemh(MEM_PATH, temp_array);
+    readmemh(`MEM_PATH, temp_array);
     
     // move data into main memory
 
