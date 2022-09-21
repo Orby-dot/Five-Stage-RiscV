@@ -25,6 +25,6 @@ always @(posedge clock) begin
     address = 32'h01000000;
 
   else
-    address = address - 4;
+    address = address + 4;
 end
 endmodule
