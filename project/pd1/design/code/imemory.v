@@ -33,8 +33,8 @@ integer x;
 
   // choose to read or write
   always @(posedge clock) begin
-    $display("Addr %h", address);
-    $display("TrueAddr %h", trueAddr);
+    // $display("Addr %h", address);
+    // $display("TrueAddr %h", trueAddr);
   //if (address) begin
     if (read_write) begin
       //write
@@ -43,16 +43,16 @@ integer x;
       memory[address + 3 : address] = data
       ^would be easy and pretty cool but idk just yet
       */
-      memory[trueAddr] <= data_in[7:0];
-      memory[trueAddr + 1] <= data_in[15:8];
-      memory[trueAddr+ 2] <= data_in[23:16];
-      memory[trueAddr + 3] <= data_in[31:24];
+      memory[trueAddr] = data_in[7:0];
+      memory[trueAddr + 1] = data_in[15:8];
+      memory[trueAddr+ 2] = data_in[23:16];
+      memory[trueAddr + 3] = data_in[31:24];
     end else begin
       // read
-      data_out[7:0] <= memory[trueAddr];
-      data_out[15:8] <= memory[trueAddr + 1];
-      data_out[23:16] <= memory[trueAddr + 2];
-      data_out[31:24] <= memory[trueAddr + 3];
+      data_out[7:0] = memory[trueAddr];
+      data_out[15:8] = memory[trueAddr + 1];
+      data_out[23:16] = memory[trueAddr + 2];
+      data_out[31:24] = memory[trueAddr + 3];
     end
   //end
 

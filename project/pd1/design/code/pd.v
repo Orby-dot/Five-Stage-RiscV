@@ -17,7 +17,7 @@ imemory mem0 (
 );
 
 initial begin
-  address = 32'h01000000;
+  address = 32'h01000000 -4;
 end
 
 always @(posedge clock) begin
@@ -26,5 +26,7 @@ always @(posedge clock) begin
 
   else
     address = address + 4;
+
+  $display("PC = %h   FC = %h ", address,data_out);
 end
 endmodule
