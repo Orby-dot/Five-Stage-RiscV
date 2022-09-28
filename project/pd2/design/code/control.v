@@ -212,3 +212,39 @@ NOTE: old garbage MAY NOT USE
 
 
 */
+
+module control (
+    input wire inst_rdy,
+    //input wire [31:0] inst
+
+    output wire [6:0] opcode,
+    output wire [4:0] rd,
+    output wire [4:0] rs1,
+    output wire [4:0] rs2,
+    output wire [2:0] funct3,
+    output wire [6:0] funct7,
+    output wire [19:0] imm,
+    output wire [4:0] shamt
+);
+
+assign opcode = inst[6:0];
+assign rd =     inst[11:7];
+assign rs1 =    inst[19:15];
+assign rs2 =    inst[24:20];
+assign funct3 = inst[14:12];
+assign funct7 = inst[31:25];
+assign shamt =  inst[24:20];
+
+@always()begin
+    //i think i might be able to do this with combinational logic
+    case (opcode[6:2]) 
+        5'b01100,5'b00100: ;            //rtype
+        5'b11000: ;                     //b type
+        5'b00000, 5'b00100, 5'b11001: ; // i type
+        5'b11011, 5'b01101, 5'b00111: ; //u type
+        5'11100: ;  //ecall
+        default:
+    endcase
+end
+
+endmodule
