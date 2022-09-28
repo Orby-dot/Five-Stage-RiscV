@@ -239,8 +239,8 @@ assign imm = ((opcode & 7'b100 0000 > 0) && (!opcode & 7'b001 0100 > 1 ) ) ? {19
             ((opcode & 7'b001 0100 > 0) && (!opcode & 7'b100 0000 > 1 ) ) ? {inst[31],inst[30:20],inst[19:12],12{1'b0}}://U
             ((opcode & 7'b100 0100 > 0) && (!opcode & 7'b001 0000 > 1 )) ? {11{inst[31]}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0}: //j
             ((opcode[6:3] & 7'b010> 0) && (!opcode[6:3] & 7'b101> 1 )) ? {19{inst[31]},inst[30:25],inst[11:8],inst[7]}://s
-            ((opcode[6:3] & 3'b111> 0) ?: 31{1'b0}:// ecall
-            {19{inst[31]},inst[30:25],inst[24:21],inst[20]};
+            ((opcode[6:3] & 3'b111> 0) ? 31{1'b0}:// ecall
+            {19{inst[31]},inst[30:25],inst[24:21],inst[20]};//i 
 
 
 
