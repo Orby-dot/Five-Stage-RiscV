@@ -1,5 +1,31 @@
 //To decode instru
+
+//i am going to build this a bit more than we need for the future
 /*
+---------CONSTANTS------------
+@NOTE: We will copy all of these values but we can decide not to use them per instuction
+[RD]
+rd = [11:7]
+
+[R1]
+rs1 = [19:15]
+
+[RS2]
+rs2 = [24:20]
+
+[FUNCT3]
+funct3 = [14:12]
+
+[FUNCT7]
+funct7 = [31:25]
+
+[OPCODE]
+opcode = [6:0]
+
+[SHAMT]
+shamt = [24:20]
+
+
 ---------TYPE-----------------
 if 01100xx or 01100xx then R
 if 11000xx then B
@@ -8,8 +34,29 @@ if 11011xx or 011011 or 00111 then U
 ------------------------------
 
 ---------FOR R TYPE-----------
+
+[BSEL]
 if x1xxxxx then Bsel = 0 
 else Bsel = 1
+
+[REG W/E]
+RegW/E = 1
+
+[DMEM W/R]
+DMEM W/R = R
+
+[WBSEL]
+WBSEL = 1
+
+[PCSEL]
+PCSel = 0
+
+[ALU]
+*To do later*
+-------------------------------
+
+
+
 
 */
 
