@@ -31,6 +31,7 @@ if 01100xx or 01100xx then R
 if 11000xx then B
 if 00000xx or 00100xx or 11001xx then I
 if 11011xx or 011011 or 00111 then U
+if 11100xx then ECALL
 ------------------------------
 
 ---------FOR R TYPE-----------
@@ -53,9 +54,130 @@ PCSel = 0
 
 [ALU]
 *To do later*
+
+[IMM]
+NONE
 -------------------------------
 
+---------FOR I TYPE-----------
 
+[BSEL]
+Bsel = 1
+
+[REG W/E]
+*
+
+[DMEM W/R]
+DMEM W/R = R
+
+[WBSEL]
+*
+
+[PCSEL]
+if 0xxxxxxx then PCSel = 0
+else PCSel = 1
+
+[ALU]
+*To do later*
+
+[IMM]
+immsel = 2
+-------------------------------
+
+---------FOR J TYPE-----------
+
+[BSEL]
+Bsel = 1
+
+[REG W/E]
+RedW/E = 1
+
+[DMEM W/R]
+DMEM W/R = R
+
+[WBSEL]
+1
+
+[PCSEL]
+PCSel = 1
+
+[ALU]
+add
+
+[IMM]
+imm sel = 0
+-------------------------------
+
+---------FOR B TYPE-----------
+
+[BSEL]
+Bsel = 1
+
+[REG W/E]
+RedW/E = 0
+
+[DMEM W/R]
+DMEM W/R = R
+
+[WBSEL]
+1
+
+[PCSEL]
+*
+
+[ALU]
+add
+
+[IMM]
+imm sel = 3
+-------------------------------
+---------FOR U TYPE-----------
+
+[BSEL]
+Bsel = 1
+
+[REG W/E]
+RedW/E = 1
+
+[DMEM W/R]
+DMEM W/R = R
+
+[WBSEL]
+1
+
+[PCSEL]
+0
+
+[ALU]
+add
+
+[IMM]
+imm sel = 1
+-------------------------------
+
+---------FOR S TYPE-----------
+
+[BSEL]
+Bsel = 1
+
+[REG W/E]
+RedW/E = 0
+
+[DMEM W/R]
+DMEM W/R = W
+
+[WBSEL]
+doesnt matter
+
+[PCSEL]
+0
+
+[ALU]
+add
+
+[IMM]
+imm sel = 4
+-------------------------------
 
 
 */
