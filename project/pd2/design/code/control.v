@@ -214,8 +214,8 @@ NOTE: old garbage MAY NOT USE
 */
 
 module control (
-    input wire inst_rdy,
-    //input wire [31:0] inst
+    //input wire inst_rdy,
+    input wire [31:0] inst
 
     output wire [6:0] opcode,
     output wire [4:0] rd,
@@ -223,7 +223,7 @@ module control (
     output wire [4:0] rs2,
     output wire [2:0] funct3,
     output wire [6:0] funct7,
-    output wire [19:0] imm,
+    output wire [31:0] imm,
     output wire [4:0] shamt
 );
 
@@ -235,6 +235,16 @@ assign funct3 = inst[14:12];
 assign funct7 = inst[31:25];
 assign shamt =  inst[24:20];
 
+assign imm = ((opcode & 7'b100 0000 > 0) && (!opcode & 7'b001 0100 > 1 ) ) ? {19{inst[31]},inst[11],inst[30:25],inst[11:8],1'b0}: //B
+            ((opcode & 7'b001 0100 > 0) && (!opcode & 7'b100 0000 > 1 ) ) ? {inst[31],inst[30:20],inst[19:12],12{1'b0}}://U
+            ((opcode & 7'b100 0100 > 0) && (!opcode & 7'b001 0000 > 1 )) ? {11{inst[31]}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0}: //j
+            ((opcode[6:3] & 7'b010> 0) && (!opcode[6:3] & 7'b101> 1 )) ? {19{inst[31]},inst[30:25],inst[11:8],inst[7]}://s
+            ((opcode[6:3] & 3'b111> 0) ?: 31{1'b0}:// ecall
+            {19{inst[31]},inst[30:25],inst[24:21],inst[20]};
+
+
+
+/*
 @always()begin
     //i think i might be able to do this with combinational logic
     case (opcode[6:2]) 
@@ -246,5 +256,5 @@ assign shamt =  inst[24:20];
         default:
     endcase
 end
-
+*/
 endmodule
