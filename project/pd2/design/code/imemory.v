@@ -4,7 +4,7 @@ module imemory
   input wire    [31:0]    address,
   input wire              read_write,
   input wire    [31:0]    data_in,
-  output wire   [31:0]    data_out
+  output reg   [31:0]    data_out
 );
 
 //8 byte chunks
@@ -30,12 +30,7 @@ integer x;
     end
 
   end
-
-  // choose to read or write
-  always @(*) begin
-    // $display("Addr %h", address);
-    // $display("TrueAddr %h", trueAddr);
-  //if (address) begin
+  always @(posedge clock)begin
     if (read_write) begin
       //write
       //so this is kinda messy because of little endian
@@ -47,14 +42,15 @@ integer x;
       memory[trueAddr + 1] = data_in[15:8];
       memory[trueAddr+ 2] = data_in[23:16];
       memory[trueAddr + 3] = data_in[31:24];
-    end else begin
-      // read
-      data_out[7:0] = memory[trueAddr];
-      data_out[15:8] = memory[trueAddr + 1];
-      data_out[23:16] = memory[trueAddr + 2];
-      data_out[31:24] = memory[trueAddr + 3];
     end
-  //end
+  end
 
+  //read
+  always @(*) begin
+    // $display("Addr %h", address);
+    // $display("TrueAddr %h", trueAddr);
+    if (!read_write) begin
+      data_out = {memory[trueAddr + 3],memory[trueAddr + 2],memory[trueAddr + 1],memory[trueAddr]};
+    end
   end
 endmodule
