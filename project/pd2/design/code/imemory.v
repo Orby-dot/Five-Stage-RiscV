@@ -32,7 +32,7 @@ integer x;
   end
 
   // choose to read or write
-  always @(posedge clock) begin
+  always @(*) begin
     // $display("Addr %h", address);
     // $display("TrueAddr %h", trueAddr);
   //if (address) begin
