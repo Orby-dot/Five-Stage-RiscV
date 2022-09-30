@@ -4,7 +4,7 @@ module imemory
   input wire    [31:0]    address,
   input wire              read_write,
   input wire    [31:0]    data_in,
-  output reg   [31:0]    data_out
+  output wire   [31:0]    data_out
 );
 
 //8 byte chunks
@@ -30,7 +30,11 @@ integer x;
     end
 
   end
-  always @(posedge clock)begin
+  
+  always @(*) begin
+    // $display("Addr %h", address);
+    // $display("TrueAddr %h", trueAddr);
+
     if (read_write) begin
       //write
       memory[trueAddr] = data_in[7:0];
@@ -38,14 +42,14 @@ integer x;
       memory[trueAddr+ 2] = data_in[23:16];
       memory[trueAddr + 3] = data_in[31:24];
     end
-  end
+  //end
 
-  //read
-  always @(*) begin
-    // $display("Addr %h", address);
-    // $display("TrueAddr %h", trueAddr);
-    if (!read_write) begin
-      data_out = {memory[trueAddr + 3],memory[trueAddr + 2],memory[trueAddr + 1],memory[trueAddr]};
-    end
+  // combinational read
+
+  assign data_out[7:0] = (memory[trueAddr] & {8{!read_write}} );
+  assign data_out[15:8] = (memory[trueAddr + 1] & {8{!read_write}} );
+  assign data_out[23:16] = (memory[trueAddr + 2] & {8{!read_write}} );
+  assign data_out[31:24] = (memory[trueAddr + 3] & {8{!read_write}} );
+
   end
 endmodule
