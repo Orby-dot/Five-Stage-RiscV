@@ -235,11 +235,11 @@ assign funct3 = inst[14:12];
 assign funct7 = inst[31:25];
 assign shamt =  inst[24:20];
 
-assign imm = (((opcode & 7'b100_0000) > 0) && ((~opcode & 7'b001_0100) > 1 ) ) ? {{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0}: //B
-            (((opcode & 7'b001_0100) > 0) && ((~opcode & 7'b100_0000) > 1 ) ) ? {inst[31],inst[30:20],inst[19:12],{12{1'b0}}}://U
-            (((opcode & 7'b100_0100) > 0) && ((~opcode & 7'b001_0000) > 1 )) ? {{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0}: //j
-            (((opcode[6:4] & 3'b010)> 0) && ((~opcode[6:4] & 3'b101)> 1 )) ? {{21{inst[31]}},inst[30:25],inst[11:8],inst[7]}://s
-            ((opcode[6:4] & 3'b111)> 0) ? {32{1'b0}}:// ecall
+assign imm = (((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ) ) ? {{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0}: //B
+            (((opcode & 7'b001_0100) ==20) && ((~opcode & 7'b100_0000) == 64 ) ) ? {inst[31],inst[30:20],inst[19:12],{12{1'b0}}}://U
+            (((opcode & 7'b100_0100) == 68) && ((~opcode & 7'b001_0000) == 16 )) ? {{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0}: //j
+            (((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) ? {{21{inst[31]}},inst[30:25],inst[11:8],inst[7]}://s
+            ((opcode[6:4] & 3'b111) == 7) ? {32{1'b0}}:// ecall
             {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]} ;//i 
 
 

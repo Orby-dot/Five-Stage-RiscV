@@ -33,11 +33,6 @@ integer x;
   always @(posedge clock)begin
     if (read_write) begin
       //write
-      //so this is kinda messy because of little endian
-      /* i think its possible to do something like:
-      memory[address + 3 : address] = data
-      ^would be easy and pretty cool but idk just yet
-      */
       memory[trueAddr] = data_in[7:0];
       memory[trueAddr + 1] = data_in[15:8];
       memory[trueAddr+ 2] = data_in[23:16];
