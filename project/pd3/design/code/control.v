@@ -215,16 +215,18 @@ NOTE: old garbage MAY NOT USE
 
 module control (
     //input wire inst_rdy,
-    input wire [31:0] inst,
+    input wire [31:0]   inst,
 
-    output wire [6:0] opcode,
-    output wire [4:0] rd,
-    output wire [4:0] rs1,
-    output wire [4:0] rs2,
-    output wire [2:0] funct3,
-    output wire [6:0] funct7,
-    output wire [31:0] imm,
-    output wire [4:0] shamt
+    output wire [6:0]   opcode,
+    output wire [4:0]   rd,
+    output wire [4:0]   rs1,
+    output wire [4:0]   rs2,
+    output wire [2:0]   funct3,
+    output wire [6:0]   funct7,
+    output wire [31:0]  imm,
+    output wire [4:0]   shamt,
+
+    output wire         b_sel
 );
 
 assign opcode = inst[6:0];
@@ -235,18 +237,56 @@ assign funct3 = inst[14:12];
 assign funct7 = inst[31:25];
 assign shamt =  inst[24:20];
 
+
+
+/* don't need as we are doing it below
 assign imm = (((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ) ) ? {{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0}: //B
             (((opcode & 7'b001_0100) ==20) && ((~opcode & 7'b100_0000) == 64 ) ) ? {inst[31],inst[30:20],inst[19:12],{12{1'b0}}}://U
             (((opcode & 7'b100_0100) == 68) && ((~opcode & 7'b001_0000) == 16 )) ? {{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0}: //j
             (((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) ? {{21{inst[31]}},inst[30:25],inst[11:8],inst[7]}://s
             ((opcode[6:4] & 3'b111) == 7) ? {32{1'b0}}:// ecall
             {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]} ;//i 
-
+*/
 
 // EXECUTE STAGE (combinational)
 // is the immediate just 0 if we don't use it? 
 // how can we detect the type of instruction we have rn?
+always @(inst)begin 
+    if(((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ))begin
+        //B
+        imm ={{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0}
+        b_sel = 1'b1;
+    end
+    else if(((opcode & 7'b001_0100) ==20) && ((~opcode & 7'b100_0000) == 64 ))begin
+        //U
+        imm ={inst[31],inst[30:20],inst[19:12],{12{1'b0}}}
+        b_sel = 1'b1;
+    end
 
+    else if(((opcode & 7'b100_0100) == 68) && ((~opcode & 7'b001_0000) == 16 )) begin
+        //J
+        imm ={{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0}
+        b_sel = 1'b1;
+    end
+
+    else if(((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) begin
+        //s
+        imm ={{21{inst[31]}},inst[30:25],inst[11:8],inst[7]}
+        b_sel = 1'b1;
+    end
+
+    else if((opcode[6:4] & 3'b111) == 7)begin
+        //ecal
+        imm= {32{1'b0}}
+        b_sel = 1'b0;
+    end
+    else begin
+        //i & R
+        imm = {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]}
+        //bsel
+        bsel = (!opcode[5] or opcode[6]);
+    end
+end
 // add vs sub there's just inst[30] that's different
 
 // funct3 = 000 =>      (~(1 && funct3))
