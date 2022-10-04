@@ -243,18 +243,22 @@ assign imm = (((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 )
             {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]} ;//i 
 
 
+// EXECUTE STAGE (combinational)
+// is the immediate just 0 if we don't use it? 
+// how can we detect the type of instruction we have rn?
 
-/*
-@always()begin
-    //i think i might be able to do this with combinational logic
-    case (opcode[6:2]) 
-        5'b01100,5'b00100: ;            //rtype
-        5'b11000: ;                     //b type
-        5'b00000, 5'b00100, 5'b11001: ; // i type
-        5'b11011, 5'b01101, 5'b00111: ; //u type
-        5'11100: ;  //ecall
-        default:
-    endcase
-end
-*/
+// add vs sub there's just inst[30] that's different
+
+// funct3 = 000 =>      (~(1 && funct3))
+// funct3 = 001 =>      ( (~(funct3[2] || funct3[1])) && funct3[0] )
+// funct3 = 010 =>      ( (~(funct3[2] || funct3[0])) && funct3[1] )
+// funct3 = 011 =>      ( (funct3[1] && funct3[0]) && ~funct3[2] )
+// funct3 = 100 =>      ( (~(funct3[1] || funct3[0])) && funct3[2] )
+// funct3 = 101 =>      ( (funct3[2] && funct3[0]) && ~funct3[1] )
+// funct3 = 110 =>      ( (funct3[2] && funct3[1]) && ~funct3[0] )
+// funct3 = 111 =>      ( funct3[2] && funct3[1] && funct3[0] )
+
+
 endmodule
+
+
