@@ -228,6 +228,7 @@ module control (
 
     output wire         b_sel,
     output wire [2:0]   alu_sel
+    output wire         pc_reg1_sel;   
 );
 
 assign opcode = inst[6:0];
@@ -238,7 +239,17 @@ assign funct3 = inst[14:12];
 assign funct7 = inst[31:25];
 assign shamt =  inst[24:20];
 
+wire unsign;
+wire br_eq;
+wire br_lt;
 
+branch_comp brn_cmpr(
+    .in_a(rs1),
+    .in_b(rs2),
+    .unsign(unsign),
+    .br_eq(br_eq),
+    .br_lt(br_lt)
+);
 
 /* don't need as we are doing it below
 assign imm = (((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ) ) ? {{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0}: //B
@@ -256,8 +267,10 @@ always @(inst)begin
     if(((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ))begin
         //B
         imm ={{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0}
-        b_sel = 1'b1; //use imm
+        b_sel = 1'b0; //use r2
         alu_sel = 0; //add
+        //need to add case statments here for funct 3
+
     end
     else if(((opcode & 7'b001_0100) ==20) && ((~opcode & 7'b100_0000) == 64 ))begin
         //U
@@ -291,14 +304,13 @@ always @(inst)begin
         imm = {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]}
         //bsel
         bsel = (!opcode[5] or opcode[6]);
-
         //x1xxxxx
         if(!opcode[4])begin
             alu_sel = 0;//add
         end
-        //xx0xxxx
+        //xx0xxxx 
         else begin
-            alu_sel = funct3;
+            alu_sel = funct3 + funct7[6:4]; //<-- funct 7 can either be 000 or 010 which is perfect :)
         end
 
     end

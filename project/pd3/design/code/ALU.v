@@ -1,8 +1,10 @@
 /* CONTROL LIST
     000 = add
-    default = sub
-    001 & 011 = SHIFT L
-    101 = SHIFT R
+    default (010)= sub
+    001 = SHIFT L signed
+    011 = SHIFT L unsigned
+    101 = SHIFT R normal 
+    110 = SHIFT R arithmetric
     100 = XOR
     110 = OR
     111 = AND
