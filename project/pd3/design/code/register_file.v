@@ -16,8 +16,8 @@ module register_file
 
 reg [30:0] reg_mem [31:0]; //reg file
 
-assign (addr_rs1 == 0) ? data_rs1 = 0:data_rs1 = reg_mem[addr_rs1]; //rs1
-assign (addr_rs2 == 0) ? data_rs2 = 0:data_rs2 = reg_mem[addr_rs2]; //rs2
+assign (addr_rs1 == 0) ? data_rs1 = 0:data_rs1 = reg_mem[addr_rs1-1]; //rs1
+assign (addr_rs2 == 0) ? data_rs2 = 0:data_rs2 = reg_mem[addr_rs2-1]; //rs2
 
   always @(*)begin
     if (write_enable) begin
