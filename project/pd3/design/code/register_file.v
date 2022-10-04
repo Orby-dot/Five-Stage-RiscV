@@ -22,7 +22,8 @@ assign (addr_rs2 == 0) ? data_rs2 = 0:data_rs2 = reg_mem[addr_rs2]; //rs2
   always @(*)begin
     if (read_write) begin
       //write
-      memory[addr_rd] = data_rd;
+      if(addr_rd != 0)
+        memory[addr_rd -1] = data_rd;
     end
   end
 
