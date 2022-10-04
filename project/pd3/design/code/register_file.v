@@ -20,7 +20,7 @@ assign (addr_rs1 == 0) ? data_rs1 = 0:data_rs1 = reg_mem[addr_rs1]; //rs1
 assign (addr_rs2 == 0) ? data_rs2 = 0:data_rs2 = reg_mem[addr_rs2]; //rs2
 
   always @(*)begin
-    if (read_write) begin
+    if (write_enable) begin
       //write
       memory[addr_rd] = data_rd;
     end
