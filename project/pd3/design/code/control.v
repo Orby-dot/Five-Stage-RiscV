@@ -226,7 +226,8 @@ module control (
     output wire [31:0]  imm,
     output wire [4:0]   shamt,
 
-    output wire         b_sel
+    output wire         b_sel,
+    output wire [2:0]   alu_sel
 );
 
 assign opcode = inst[6:0];
@@ -255,36 +256,51 @@ always @(inst)begin
     if(((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ))begin
         //B
         imm ={{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0}
-        b_sel = 1'b1;
+        b_sel = 1'b1; //use imm
+        alu_sel = 0; //add
     end
     else if(((opcode & 7'b001_0100) ==20) && ((~opcode & 7'b100_0000) == 64 ))begin
         //U
         imm ={inst[31],inst[30:20],inst[19:12],{12{1'b0}}}
-        b_sel = 1'b1;
+        b_sel = 1'b1;//use imm
+        alu_sel = 0; //add
     end
 
     else if(((opcode & 7'b100_0100) == 68) && ((~opcode & 7'b001_0000) == 16 )) begin
         //J
         imm ={{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0}
         b_sel = 1'b1;
+        alu_sel = 0;//add
     end
 
     else if(((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) begin
         //s
         imm ={{21{inst[31]}},inst[30:25],inst[11:8],inst[7]}
         b_sel = 1'b1;
+        alu_sel = 0; //add
     end
 
     else if((opcode[6:4] & 3'b111) == 7)begin
         //ecal
         imm= {32{1'b0}}
         b_sel = 1'b0;
+        alu_sel = 0 ; //add
     end
     else begin
         //i & R
         imm = {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]}
         //bsel
         bsel = (!opcode[5] or opcode[6]);
+
+        //x1xxxxx
+        if(!opcode[4])begin
+            alu_sel = 0;//add
+        end
+        //xx0xxxx
+        else begin
+            alu_sel = funct3;
+        end
+
     end
 end
 // add vs sub there's just inst[30] that's different
