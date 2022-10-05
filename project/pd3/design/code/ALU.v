@@ -12,18 +12,20 @@
 module ALU(
     input wire[31:0] in_a,
     input wire[31:0] in_b,
-    input wire [2:0]  control,
+    input wire [3:0]  control, // funct7[5], funct3
     output wire [31:0] out
 );
 always@(in_a,in_b,control)begin
     case(control)begin
-        3'b000 :            out = in_a + in_b;
-        3'b011, 3'b001:     out = in_a << in_b;
-        3'b101 :            out = in_a >> in_b;
-        3'b100 :            out = in_a ^ in_b;
-        3'b110 :            out = in_a | in_b;
-        3'b111 :            out = in_a & in_b;
-        default :           out = in_a - in_b;
+        4'b0000 :            out = in_a + in_b;                         // add
+        4'b0001 :            out = {in_a[31], (in_a[30:0] << in_b) };   // shift L signed (keep same MSB, shift the rest)
+        4'b0011 :            out = in_a << in_b;                        // shift L unsigned
+        4'b0101 :            out = in_a >> in_b;                        // shift R 
+        4'b1101 :            out = {in_a[31], (in_a >> in_b)[30:0]};    // shift R arithmetic (shift R and leave OG MSB)
+        4'b0100 :            out = in_a ^ in_b;                         // XOR
+        4'b0110 :            out = in_a | in_b;                         // OR
+        4'b0111 :            out = in_a & in_b;                         // AND
+        default:             out = in_a - in_b;                         // sub (1000)
     end
 end
 endmodule
