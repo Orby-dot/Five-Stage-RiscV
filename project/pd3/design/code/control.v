@@ -298,14 +298,14 @@ always @(inst)begin
     else if(((opcode & 7'b100_0100) == 68) && ((~opcode & 7'b001_0000) == 16 )) begin
         //J
         imm ={{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0};
-        b_sel = 1'b1;
+        b_sel = 1'b1;//use imm
         alu_sel = 0;//add
     end
 
     else if(((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) begin
         //s
         imm ={{21{inst[31]}},inst[30:25],inst[11:8],inst[7]};
-        b_sel = 1'b1;
+        b_sel = 1'b1; //use imm
         alu_sel = 0; //add
     end
 
@@ -326,7 +326,7 @@ always @(inst)begin
         end
         //xx0xxxx 
         else begin
-            alu_sel = funct3 + funct7[6:4]; //<-- funct 7[6:4] can either be 000 or 010 which is perfect :)
+            alu_sel = {funct7[5],funct3}; //control bits for alu
         end
 
     end
