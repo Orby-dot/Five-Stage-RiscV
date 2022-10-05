@@ -226,10 +226,11 @@ module control (
     output wire [31:0]  imm,
     output wire [4:0]   shamt,
 
-    output wire         b_sel,
-    output wire [2:0]   alu_sel
-    output wire         pc_reg1_sel,
-    output wire         brn_tkn   
+    output wire         b_sel,         //0 if rs2, 1 if imm
+    output wire [2:0]   alu_sel,
+    output wire         pc_reg1_sel,    //0 if rs1, 1 is pc 
+    output wire         brn_tkn,   
+    output wire         rs2_shamt_sel //0 if rs2, 1 if shamt
 );
 
 assign opcode = inst[6:0];
@@ -300,6 +301,7 @@ always @(inst)begin
         imm ={{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0};
         b_sel = 1'b1;//use imm
         alu_sel = 0;//add
+        pc_reg1_sel = 1;//select pc
     end
 
     else if(((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) begin
@@ -307,6 +309,7 @@ always @(inst)begin
         imm ={{21{inst[31]}},inst[30:25],inst[11:8],inst[7]};
         b_sel = 1'b1; //use imm
         alu_sel = 0; //add
+        pc_reg1_sel = 0;
     end
 
     else if((opcode[6:4] & 3'b111) == 7)begin
@@ -314,6 +317,7 @@ always @(inst)begin
         imm= {32{1'b0}};
         b_sel = 1'b0;
         alu_sel = 0 ; //add
+        pc_reg1_sel = 0;
     end
     else begin
         //i & R
@@ -327,7 +331,10 @@ always @(inst)begin
         //xx0xxxx 
         else begin
             alu_sel = {funct7[5],funct3}; //control bits for alu
+            rs2_shamt_sel = (funct[0] && ~(funct3[1] & funct3[2]));
         end
+
+        pc_reg1_sel = 0;
 
     end
 end
