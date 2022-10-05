@@ -245,6 +245,7 @@ assign rs2 =    inst[24:20];
 assign funct3 = inst[14:12];
 assign funct7 = inst[31:25];
 assign shamt =  inst[24:20];
+assign unsign = funct3[1];
 
 /*
 wire unsign;
@@ -266,7 +267,7 @@ assign imm = (((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 )
 // EXECUTE STAGE (combinational)
 // is the immediate just 0 if we don't use it? 
 // how can we detect the type of instruction we have rn?
-always @(inst)begin 
+always @(inst) begin 
     if(((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ))begin
         //B
 
@@ -275,10 +276,10 @@ always @(inst)begin
         b_sel = 1'b0; //use r2
         alu_sel = 0; //add
         pc_reg1_sel = 1; //want to add to the pc
+        rs2_shamt_sel=0;
 
 
         //for branch compare
-        unsign = funct3[1];
         case ({funct3[2],funct3[0]})
             2'b00: brn_tkn = br_eq;
             2'b01: brn_tkn = ~br_eq;
@@ -294,6 +295,8 @@ always @(inst)begin
         alu_sel = 0; //add
 
         pc_reg1_sel = ~opcode[5];// auipc 
+        brn_tkn = 0;
+        rs2_shamt_sel = 0;
 
     end
 
@@ -303,6 +306,8 @@ always @(inst)begin
         b_sel = 1'b1;//use imm
         alu_sel = 0;//add
         pc_reg1_sel = 1;//select pc
+        brn_tkn = 1;
+        rs2_shamt_sel=0;
     end
 
     else if(((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) begin
@@ -311,15 +316,18 @@ always @(inst)begin
         b_sel = 1'b1; //use imm
         alu_sel = 0; //add
         pc_reg1_sel = 0;
+        brn_tkn = 0;
+        rs2_shamt_sel =0;
     end
 
     else if((opcode[6:4] & 3'b111) == 7)begin
         //ecal
         imm= {32{1'b0}};
-        inst[0] = inst[0];//do not remove will break everything!
         b_sel = 1'b0;
         alu_sel = 0 ; //add
         pc_reg1_sel = 0;
+        brn_tkn =0;
+        rs2_shamt_sel = 0;
     end
     else begin
         //i & R
@@ -329,6 +337,7 @@ always @(inst)begin
         //x1xxxxx
         if(!opcode[4])begin
             alu_sel = 0;//add
+            rs2_shamt_sel = 0;
         end
         //xx0xxxx 
         else begin
@@ -337,6 +346,7 @@ always @(inst)begin
         end
 
         pc_reg1_sel = 0;
+        brn_tkn= 0;
 
     end
 end
