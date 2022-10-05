@@ -228,7 +228,8 @@ module control (
 
     output wire         b_sel,
     output wire [2:0]   alu_sel
-    output wire         pc_reg1_sel;   
+    output wire         pc_reg1_sel,
+    output wire         brn_tkn   
 );
 
 assign opcode = inst[6:0];
@@ -266,42 +267,57 @@ assign imm = (((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 )
 always @(inst)begin 
     if(((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ))begin
         //B
-        imm ={{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0}
+
+        imm = {{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0};
+
         b_sel = 1'b0; //use r2
         alu_sel = 0; //add
-        //need to add case statments here for funct 3
+        pc_reg1_sel = 1; //want to add to the pc
+
+
+        //for branch compare
+        unsign = funct3[1];
+        case ({funct3[2],funct3[0]}) begin
+            2'b00: brn_tkn = br_eq;
+            2'b01: brn_tkn = ~br_eq;
+            2'b10: brn_tkn = br_lt;
+            2'b11: brn_tkn = ~br_lt;
+        end
 
     end
     else if(((opcode & 7'b001_0100) ==20) && ((~opcode & 7'b100_0000) == 64 ))begin
         //U
-        imm ={inst[31],inst[30:20],inst[19:12],{12{1'b0}}}
+        imm ={inst[31],inst[30:20],inst[19:12],{12{1'b0}}};
         b_sel = 1'b1;//use imm
         alu_sel = 0; //add
+
+        pc_reg1_sel = ~opcode[5];// auipc 
+
     end
 
     else if(((opcode & 7'b100_0100) == 68) && ((~opcode & 7'b001_0000) == 16 )) begin
         //J
-        imm ={{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0}
+        imm ={{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0};
         b_sel = 1'b1;
         alu_sel = 0;//add
     end
 
     else if(((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) begin
         //s
-        imm ={{21{inst[31]}},inst[30:25],inst[11:8],inst[7]}
+        imm ={{21{inst[31]}},inst[30:25],inst[11:8],inst[7]};
         b_sel = 1'b1;
         alu_sel = 0; //add
     end
 
     else if((opcode[6:4] & 3'b111) == 7)begin
         //ecal
-        imm= {32{1'b0}}
+        imm= {32{1'b0}};
         b_sel = 1'b0;
         alu_sel = 0 ; //add
     end
     else begin
         //i & R
-        imm = {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]}
+        imm = {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]};
         //bsel
         bsel = (!opcode[5] or opcode[6]);
         //x1xxxxx
@@ -310,7 +326,7 @@ always @(inst)begin
         end
         //xx0xxxx 
         else begin
-            alu_sel = funct3 + funct7[6:4]; //<-- funct 7 can either be 000 or 010 which is perfect :)
+            alu_sel = funct3 + funct7[6:4]; //<-- funct 7[6:4] can either be 000 or 010 which is perfect :)
         end
 
     end
