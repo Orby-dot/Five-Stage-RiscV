@@ -42,7 +42,12 @@ wire [31:0] data_rs2;
 wire [31:0] data_rd;
 
 //-----------------
+//brch
 
+wire         unsign;
+wire         br_eq;
+wire         br_lt;
+//
 //ALU---------------------
 wire [31:0] alu_out;
 //
@@ -72,6 +77,8 @@ imemory imem (
 //decode
 control decode(
     .inst(inst),
+    .br_eq(br_eq),
+    .br_lt(br_lt),
 
     .opcode(opcode),
     .rd(addr_rd),
@@ -86,17 +93,18 @@ control decode(
     .alu_sel(alu_sel),
     .pc_reg1_sel(pc_reg1_sel),
     .brn_tkn(brn_tkn),
-    .rs2_shamt_sel(rs2_shamt_sel)
+    .rs2_shamt_sel(rs2_shamt_sel),
+    .unsign(unsign)
 );
 
 register_file reg_file(
   .clock(clock),
 
-  .addr_rs1(rs1),
+  .addr_rs1(addr_rs1),
   .data_rs1(data_rs1),
 
-  addr_rs2(addr_rs2),
-  data_rs2(data_rs2),
+  .addr_rs2(addr_rs2),
+  .data_rs2(data_rs2),
 
   .addr_rd(addr_rd),
   .data_rd(data_rd),
@@ -104,10 +112,18 @@ register_file reg_file(
 
 );
 
+branch_comp brn_cmpr(
+    .in_a(data_rs1),
+    .in_b(data_rs2),
+    .unsign(unsign),
+    .br_eq(br_eq),
+    .br_lt(br_lt)
+);
+
 
 ALU alu(
   .in_a((pc_reg1_sel)? address:data_rs1),
-  .in_b((b_sel)?imm:(rs2_shamt_sel)?data_rs2:{{27{1'b0}}shamt}),
+  .in_b((b_sel)?imm:(rs2_shamt_sel)?data_rs2:{{27{1'b0}},shamt}),
   .control(alu_sel),
   .out(alu_out)
 );

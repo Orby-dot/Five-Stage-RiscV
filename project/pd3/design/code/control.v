@@ -216,21 +216,26 @@ NOTE: old garbage MAY NOT USE
 module control (
     //input wire inst_rdy,
     input wire [31:0]   inst,
+    input wire         br_eq,
+    input wire         br_lt,
 
-    output wire [6:0]   opcode,
-    output wire [4:0]   rd,
-    output wire [4:0]   rs1,
-    output wire [4:0]   rs2,
-    output wire [2:0]   funct3,
-    output wire [6:0]   funct7,
-    output wire [31:0]  imm,
-    output wire [4:0]   shamt,
+    output reg [6:0]   opcode,
+    output reg [4:0]   rd,
+    output reg [4:0]   rs1,
+    output reg [4:0]   rs2,
+    output reg [2:0]   funct3,
+    output reg [6:0]   funct7,
+    output reg [31:0]  imm,
+    output reg [4:0]   shamt,
 
-    output wire         b_sel,         //0 if rs2, 1 if imm
-    output wire [2:0]   alu_sel,
-    output wire         pc_reg1_sel,    //0 if rs1, 1 is pc 
-    output wire         brn_tkn,   
-    output wire         rs2_shamt_sel //0 if rs2, 1 if shamt
+    output reg         b_sel,         //0 if rs2, 1 if imm
+    output reg [3:0]   alu_sel,
+    output reg         pc_reg1_sel,    //0 if rs1, 1 is pc 
+    output reg         brn_tkn,   
+    output reg         rs2_shamt_sel, //0 if rs2, 1 if shamt
+
+    output reg         unsign
+
 );
 
 assign opcode = inst[6:0];
@@ -241,17 +246,13 @@ assign funct3 = inst[14:12];
 assign funct7 = inst[31:25];
 assign shamt =  inst[24:20];
 
+/*
 wire unsign;
 wire br_eq;
 wire br_lt;
 
-branch_comp brn_cmpr(
-    .in_a(rs1),
-    .in_b(rs2),
-    .unsign(unsign),
-    .br_eq(br_eq),
-    .br_lt(br_lt)
-);
+*/
+
 
 /* don't need as we are doing it below
 assign imm = (((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ) ) ? {{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0}: //B
@@ -278,12 +279,12 @@ always @(inst)begin
 
         //for branch compare
         unsign = funct3[1];
-        case ({funct3[2],funct3[0]}) begin
+        case ({funct3[2],funct3[0]})
             2'b00: brn_tkn = br_eq;
             2'b01: brn_tkn = ~br_eq;
             2'b10: brn_tkn = br_lt;
             2'b11: brn_tkn = ~br_lt;
-        end
+        endcase 
 
     end
     else if(((opcode & 7'b001_0100) ==20) && ((~opcode & 7'b100_0000) == 64 ))begin
@@ -315,6 +316,7 @@ always @(inst)begin
     else if((opcode[6:4] & 3'b111) == 7)begin
         //ecal
         imm= {32{1'b0}};
+        inst[0] = inst[0];//do not remove will break everything!
         b_sel = 1'b0;
         alu_sel = 0 ; //add
         pc_reg1_sel = 0;
@@ -323,7 +325,7 @@ always @(inst)begin
         //i & R
         imm = {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]};
         //bsel
-        bsel = (!opcode[5] or opcode[6]);
+        b_sel = (!opcode[5] | opcode[6]);
         //x1xxxxx
         if(!opcode[4])begin
             alu_sel = 0;//add
@@ -331,7 +333,7 @@ always @(inst)begin
         //xx0xxxx 
         else begin
             alu_sel = {funct7[5],funct3}; //control bits for alu
-            rs2_shamt_sel = (funct[0] && ~(funct3[1] & funct3[2]));
+            rs2_shamt_sel = (funct3[0] && ~(funct3[1] & funct3[2]));
         end
 
         pc_reg1_sel = 0;

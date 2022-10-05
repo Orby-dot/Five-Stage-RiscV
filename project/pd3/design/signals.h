@@ -4,7 +4,7 @@
 // ----- signals -----
 // You will also need to define PC properly
 `define F_PC                address
-`define F_INSN              data_out
+`define F_INSN              inst
 
 `define D_PC                address
 `define D_OPCODE            opcode

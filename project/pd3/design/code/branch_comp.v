@@ -2,8 +2,8 @@ module branch_comp(
     input wire [31:0]   in_a,
     input wire [31:0]   in_b,
     input wire          unsign,
-    output wire         br_eq,
-    output wire         br_lt
+    output reg         br_eq,
+    output reg         br_lt
 );
 
 always @(in_a,in_b,unsign)begin 
@@ -19,6 +19,7 @@ always @(in_a,in_b,unsign)begin
         2'b01: br_lt = 1'b0;
         2'b10: br_lt = 1'b1;
         2'b11: br_lt = (in_a > in_b);
+        endcase
     end
 
 end
