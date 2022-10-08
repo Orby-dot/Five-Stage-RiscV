@@ -341,8 +341,8 @@ always @(inst) begin
         end
         //xx0xxxx 
         else begin
-            alu_sel = {funct7[5],funct3}; //control bits for alu
-            rs2_shamt_sel = (funct3[0] && ~(funct3[1] & funct3[2]));
+            alu_sel = {(~opcode[5]&(funct3[0])&funct7[5]),funct3}; //control bits for alu
+            rs2_shamt_sel = (funct3[0]) && ~(funct3[1] & funct3[2]);
         end
 
         pc_reg1_sel = 0;
