@@ -1,4 +1,4 @@
-// DO NOT rely on this file, it will be changed with a fresh one
+
 `include "signals.h"
 
 module top;
@@ -21,12 +21,11 @@ module top;
   `include "tracegen.v"
 endmodule
 
-module test
-(
-  input wire clock,
-  input wire reset
-);
+module my_test(
 
+  input clock,
+  input reset);
+  pd1 pd(.clock(clock),.reset(reset));
   initial begin
 
     #10 reset = 1'b1;

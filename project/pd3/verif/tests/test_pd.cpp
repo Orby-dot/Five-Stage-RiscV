@@ -18,10 +18,27 @@ vluint64_t main_time;
 double sc_time_stamp () {     // Called by $time in Verilog
   return main_time;           // converts to double, to match
 }
-
+void nextCycle() {
+  toggleClock();
+  top->eval();
+  toggleClock();
+  top->eval();
+}
+void test_write() {
+  
+    top->write_enable = 1;
+    top->addr_rd = 15;
+    top->data_rd = 500;
+    nextCycle();
+    top->write_enable = 0;
+    
+  
+}
 int main(int argc, char** argv) {
   Verilated::commandArgs(argc, argv);   // Remember args
   top = new Vtop;
+
+
 
 #ifdef VCD
   Verilated::traceEverOn(true);
@@ -32,6 +49,13 @@ int main(int argc, char** argv) {
 
   // set the scope correctly so that we can access the clock in C testbench
   svSetScope(svGetScopeFromName("TOP.top.clkg"));
+  top->eval();
+  top->write_enable = 0;
+  top->data_rd = 0;
+  top->addr_rd = 0;
+  nextCycle();
+  test_write();
+  nextCycle();
   while (!Verilated::gotFinish()) {
     toggleClock();
     top->eval();

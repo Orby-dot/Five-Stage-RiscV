@@ -41,6 +41,10 @@ void test_reset_and_initial_pc() {
   assertm(top->F_INSN == 0x00000113, "the second instruction should be 32'h00000113, got " << std::hex << top->F_INSN);
 }
 
+void run_a_bit(){
+  top->reset = 0;
+  for(int i = 0; i < 10; i++) nextCycle();
+}
 int main(int argc, char** argv) {
   Verilated::commandArgs(argc, argv);   // Remember args
   top = new Vtop;
@@ -54,6 +58,13 @@ int main(int argc, char** argv) {
   svSetScope(svGetScopeFromName("TOP.top.clkg"));
   top->reset = 1;
   test_reset_and_initial_pc();
+  top->reset = 1;
+  nextCycle();
+  run_a_bit();
+  top->reset = 1;
+  nextCycle();
+  run_a_bit();
+  run_a_bit();
 
   std::cout << "Test passed" << std::endl;
 

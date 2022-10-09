@@ -54,7 +54,9 @@ wire [31:0] alu_out;
 
 assign e_pc= (brn_tkn) ? alu_out:address;
 
-assign write_enable = 1'b0; //always off for pd3
+initial begin
+  write_enable = 1'b0; //always off for pd3
+end 
 
 //pc counter
 pc_counter pc (
