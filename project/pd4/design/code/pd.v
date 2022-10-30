@@ -35,29 +35,35 @@ wire [31:0]     e_pc;//effective pc after excute
 wire [31:0]     alu_out;
 wire            rs2_shamt_sel;
 
-wire write_enable;
 //---------------
-//REG FILE----------------
+//REG FILE---------------------------------------------
 wire [31:0] data_rs1;
 wire [31:0] data_rs2;
 wire [31:0] data_rd;
+wire write_enable;
 
-//-----------------
+//--------------------------------------------
 //brch
 
 wire         unsign;
 wire         br_eq;
 wire         br_lt;
 //
-//ALU---------------------
+//ALU-----------------------------------------------
 wire [31:0] alu_out;
 //
 
+//DMEM---------------------------------------------------
+wire d_RW;
+wire [1:0] access_size;
+wire [31:0] dmem_data_R;
+//
+
+//WRITE BACK-------------------------------------- 
+wire [1:0] WB_sel;
 assign e_pc= (brn_tkn) ? alu_out:address;
 
-initial begin
-  write_enable = 1'b0; //always off for pd3
-end 
+//
 
 //pc counter
 pc_counter pc (
@@ -97,7 +103,10 @@ control decode(
     .pc_reg1_sel(pc_reg1_sel),
     .brn_tkn(brn_tkn),
     .rs2_shamt_sel(rs2_shamt_sel),
-    .unsign(unsign)
+    .unsign(unsign),
+    .WB_sel(WB_sel),
+    .write_back(write_enable),
+    .d_RW()
 );
 
 register_file reg_file(
@@ -134,11 +143,11 @@ ALU alu(
 //Dmemory
 
 dmemory d_mem(
-  .address(d_addr),
+  .address(alu_out),
   .read_write(d_RW),
-  .data_in(data_W),
-
-  .data_out(data_R)
+  .data_in(data_rs2),
+  .access_size(access_size),
+  .data_out(dmem_data_R)
 )
 
 
@@ -146,9 +155,9 @@ dmemory d_mem(
 write_back w_back(
   .pc(address),
   .alu(alu_out),
-  .mem(data_R),
+  .mem(dmem_data_R),
   .WB_sel(WB_sel),
-  .wb(wb)
+  .wb(data_rd)
 )
 
 

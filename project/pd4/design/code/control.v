@@ -23,6 +23,7 @@ module control (
     output reg         unsign,
 
     output reg [1:0]   WB_sel,  // 0 = mem, 1= alu, 2 = pc+4
+    output reg         write_back //if we should write back to reg file
 
     output reg         d_RW //1 = write
 
@@ -48,6 +49,7 @@ always @(inst) begin
         pc_reg1_sel = 1; //want to add to the pc
         rs2_shamt_sel=0;
         WB_sel = 0; //doesn't matter
+        write_back = 0;//no write to regfile
         d_RW = 0;//don't need to write
 
 
@@ -70,6 +72,7 @@ always @(inst) begin
         brn_tkn = 0;
         rs2_shamt_sel = 0;
         WB_sel = 1;//alu
+        write_back = 1; //write back to regfile
         d_RW =0;//don't need to write
 
     end
@@ -83,6 +86,7 @@ always @(inst) begin
         brn_tkn = 1;
         rs2_shamt_sel=0;
         WB_sel = 0; //doesn't matter
+        write_back = 0;//no write to regfile
         d_RW = 0;//dont need to write
     end
 
@@ -95,6 +99,7 @@ always @(inst) begin
         brn_tkn = 0;
         rs2_shamt_sel =0;
         WB_sel = 0; //doesn't matter
+        write_back = 0;//no write to regfile
         d_RW = 1;//need to write
     end
 
@@ -107,6 +112,7 @@ always @(inst) begin
         brn_tkn =0;
         rs2_shamt_sel = 0;
         WB_sel = 0;// doesn't matter
+        write_back = 0;//no write to regfile
         d_RW = 0 ; //dont need to write
     end
     else begin
@@ -114,7 +120,8 @@ always @(inst) begin
         imm = {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]};
         //bsel
         b_sel = (!opcode[5] | opcode[6]);
-        d_RW = 0; //don't need to write
+        write_back = 1;//write to regfile
+        d_RW = 0; //don't need to write to dmem
         //x1xxxxx
         if(!opcode[4])begin
             alu_sel = 0;//add
