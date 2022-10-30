@@ -107,7 +107,7 @@ control decode(
     .unsign(unsign),
     .WB_sel(WB_sel),
     .write_back(write_enable),
-    .d_RW()
+    .d_RW(d_RW)
 );
 
 register_file reg_file(
