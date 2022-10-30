@@ -20,7 +20,9 @@ module control (
     output reg         brn_tkn,   
     output reg         rs2_shamt_sel, //0 if rs2, 1 if shamt
 
-    output reg         unsign
+    output reg         unsign,
+
+    output reg [1:0]    WB_sel  // 0 = mem, 1= alu, 2 = pc+4
 
 );
 
@@ -43,6 +45,7 @@ always @(inst) begin
         alu_sel = 0; //add
         pc_reg1_sel = 1; //want to add to the pc
         rs2_shamt_sel=0;
+        WB_sel = 0; //doesn't matter
 
 
         //for branch compare
@@ -63,6 +66,7 @@ always @(inst) begin
         pc_reg1_sel = ~opcode[5];// auipc 
         brn_tkn = 0;
         rs2_shamt_sel = 0;
+        WB_sel = 1;//alu
 
     end
 
@@ -74,6 +78,7 @@ always @(inst) begin
         pc_reg1_sel = 1;//select pc
         brn_tkn = 1;
         rs2_shamt_sel=0;
+        WB_sel = 0; //doesn't matter
     end
 
     else if(((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) begin
@@ -84,6 +89,7 @@ always @(inst) begin
         pc_reg1_sel = 0;
         brn_tkn = 0;
         rs2_shamt_sel =0;
+        WB_sel = 0; //doesn't matter
     end
 
     else if((opcode[6:4] & 3'b111) == 7)begin
@@ -94,6 +100,7 @@ always @(inst) begin
         pc_reg1_sel = 0;
         brn_tkn =0;
         rs2_shamt_sel = 0;
+        WB_sel = 0;// doesn't matter
     end
     else begin
         //i & R
@@ -113,6 +120,18 @@ always @(inst) begin
 
         pc_reg1_sel = 0;
         brn_tkn= 0;
+
+        //for wb sel
+        //1xxxxxx
+        if(opcode[6]) begin
+            WB_sel = 2;// pc+4
+        end
+        //xx1xxxx
+        else if(opcode[4]) begin
+            WB_sel = 1;//alu
+        end
+        else begin
+            WB_sel = 0; //mem
 
     end
 end
