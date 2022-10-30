@@ -4,6 +4,8 @@
 module pc_counter (
     input wire clock,
     input wire reset,
+    input wire [31:0] alu,
+    input wire PC_sel,
     output reg [31:0] pc
 );
 
@@ -17,7 +19,10 @@ always @(posedge clock) begin
     pc = 32'h01000000;
   
   else
-    pc = pc + 4;
+    case (PC_sel)
+    1'b0:pc = pc + 4;;
+    1'b1:pc = alu;
+    endcase
   //$display("PC = %h   FC = %h ", address,data_out);
   end
 endmodule

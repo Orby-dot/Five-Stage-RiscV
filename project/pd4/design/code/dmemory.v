@@ -1,6 +1,5 @@
 module dmemory
 (
-  input wire              clock,
   input wire    [31:0]    address,
   input wire              read_write,
   input wire    [31:0]    data_in,

@@ -2,16 +2,7 @@ module pd(
   input clock,
   input reset
 );
-  reg [31:0] pc;
-  always @(posedge clock) begin
-    if(reset) pc <= 0;
-    else pc <= pc + 1;
-  end
 
-  module pd(
-  input clock,
-  input reset
-);
 //wires
 //FETCH --------------------
 wire [31:0]     address;
@@ -140,8 +131,26 @@ ALU alu(
   .out(alu_out)
 );
 
+//Dmemory
+
+dmemory d_mem(
+  .address(d_addr),
+  .read_write(d_RW),
+  .data_in(data_W),
+
+  .data_out(data_R)
+)
 
 
-endmodule
+//WRITE BACK
+write_back w_back(
+  .pc(address),
+  .alu(alu_out),
+  .mem(data_R),
+  .WB_sel(WB_sel),
+  .wb(wb)
+)
+
+
 
 endmodule
