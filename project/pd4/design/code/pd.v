@@ -62,13 +62,14 @@ wire [31:0] dmem_data_R;
 //WRITE BACK-------------------------------------- 
 wire [1:0] WB_sel;
 assign e_pc= (brn_tkn) ? alu_out:address;
-
+assign access_size = funct3[1:0];
 //
 
 //pc counter
 pc_counter pc (
   .clock(clock),
   .reset(reset),
+  .alu(alu_out),
   .PC_sel(brn_tkn),
   .pc(address)
 );
@@ -148,17 +149,17 @@ dmemory d_mem(
   .data_in(data_rs2),
   .access_size(access_size),
   .data_out(dmem_data_R)
-)
+);
 
 
 //WRITE BACK
 write_back w_back(
   .pc(address),
   .alu(alu_out),
-  .mem(dmem_data_R),
+  .data_r(dmem_data_R),
   .WB_sel(WB_sel),
   .wb(data_rd)
-)
+);
 
 
 

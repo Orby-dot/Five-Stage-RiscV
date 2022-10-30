@@ -21,9 +21,10 @@ module control (
     output reg         rs2_shamt_sel, //0 if rs2, 1 if shamt
 
     output reg         unsign,
+    //output reg [1:0]   access_size,//0 = 1 byte, 1 = half-word, 2 = fullword
 
     output reg [1:0]   WB_sel,  // 0 = mem, 1= alu, 2 = pc+4
-    output reg         write_back //if we should write back to reg file
+    output reg         write_back, //if we should write back to reg file
 
     output reg         d_RW //1 = write
 
@@ -147,6 +148,7 @@ always @(inst) begin
         end
         else begin
             WB_sel = 0; //mem
+        end
 
     end
 end

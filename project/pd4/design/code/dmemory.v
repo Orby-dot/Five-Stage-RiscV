@@ -20,31 +20,59 @@ wire [31:0] trueAddr;
 assign trueAddr = (address-32'h01000000);
 integer x;
   
-  always @(*) begin
-    // $display("Addr %h", address);
-    // $display("TrueAddr %h", trueAddr);
+always @(*) begin
+  // $display("Addr %h", address);
+  // $display("TrueAddr %h", trueAddr);
 
-    if (read_write) begin
-      //write
+  if (read_write) begin
+    //write
+    if(access_size ==0)
       memory[trueAddr] = data_in[7:0];      // always happens
+      memory[trueAddr + 1] = memory[trueAddr + 1];
+      memory[trueAddr+ 2] = memory[trueAddr+ 2] ;   // rest if access_size = 2
+      memory[trueAddr + 3] = memory[trueAddr + 3];
 
-      if (access_size > 0) begin 
-        memory[trueAddr + 1] = data_in[15:8]; // if access_size = 1 or 2
-      end
-
-      if (access_size == 2) begin 
-        memory[trueAddr+ 2] = data_in[23:16];   // rest if access_size = 2
-        memory[trueAddr + 3] = data_in[31:24];
-      end
+    else if (access_size == 1) begin 
+      memory[trueAddr] = data_in[7:0];      // always happens
+      memory[trueAddr + 1] = data_in[15:8]; // if access_size = 1 or 2
+      memory[trueAddr+ 2] = memory[trueAddr+ 2] ;   // rest if access_size = 2
+      memory[trueAddr + 3] = memory[trueAddr + 3];
     end
+
+    else if (access_size == 2) begin 
+      memory[trueAddr] = data_in[7:0];      // always happens
+      memory[trueAddr + 1] = data_in[15:8]; // if access_size = 1 or 2
+      memory[trueAddr+ 2] = data_in[23:16];   // rest if access_size = 2
+      memory[trueAddr + 3] = data_in[31:24];
+    end
+    else begin
+      emory[trueAddr] = memory[trueAddr + 1];      // always happens
+      memory[trueAddr + 1] = memory[trueAddr + 1];
+      memory[trueAddr+ 2] = memory[trueAddr+ 2] ;   // rest if access_size = 2
+      memory[trueAddr + 3] = memory[trueAddr + 3];
+    end
+
+
+    /*
+    memory[trueAddr] = data_in[7:0];      // always happens
+
+    if (access_size > 0) begin 
+      memory[trueAddr + 1] = data_in[15:8]; // if access_size = 1 or 2
+    end
+
+    if (access_size == 2) begin 
+      memory[trueAddr+ 2] = data_in[23:16];   // rest if access_size = 2
+      memory[trueAddr + 3] = data_in[31:24];
+    end*/
+  end
   //end
 
   // combinational read
 
-  assign data_out[7:0] = (memory[trueAddr] & {8{!read_write}} );
-  assign data_out[15:8] = (memory[trueAddr + 1] & {8{!read_write}} );
-  assign data_out[23:16] = (memory[trueAddr + 2] & {8{!read_write}} );
-  assign data_out[31:24] = (memory[trueAddr + 3] & {8{!read_write}} );
+  assign data_out[7:0] = (memory[trueAddr]);
+  assign data_out[15:8] = (memory[trueAddr + 1]);
+  assign data_out[23:16] = (memory[trueAddr + 2]);
+  assign data_out[31:24] = (memory[trueAddr + 3]);
 
   end
 endmodule
