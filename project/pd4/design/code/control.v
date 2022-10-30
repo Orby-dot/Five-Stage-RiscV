@@ -45,14 +45,13 @@ always @(inst) begin
 
         imm = {{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0};
 
-        b_sel = 1'b0; //use r2
+        b_sel = 1'b1; //use imm
         alu_sel = 0; //add
         pc_reg1_sel = 1; //want to add to the pc
         rs2_shamt_sel=0;
         WB_sel = 0; //doesn't matter
         write_back = 0;//no write to regfile
         d_RW = 0;//don't need to write
-
 
         //for branch compare
         case ({funct3[2],funct3[0]})
