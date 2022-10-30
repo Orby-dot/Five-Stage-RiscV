@@ -63,7 +63,7 @@ end
 pc_counter pc (
   .clock(clock),
   .reset(reset),
-  
+  .PC_sel(brn_tkn),
   .pc(address)
 );
 

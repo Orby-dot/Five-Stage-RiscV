@@ -22,7 +22,9 @@ module control (
 
     output reg         unsign,
 
-    output reg [1:0]    WB_sel  // 0 = mem, 1= alu, 2 = pc+4
+    output reg [1:0]   WB_sel,  // 0 = mem, 1= alu, 2 = pc+4
+
+    output reg         d_RW //1 = write
 
 );
 
@@ -46,6 +48,7 @@ always @(inst) begin
         pc_reg1_sel = 1; //want to add to the pc
         rs2_shamt_sel=0;
         WB_sel = 0; //doesn't matter
+        d_RW = 0;//don't need to write
 
 
         //for branch compare
@@ -67,6 +70,7 @@ always @(inst) begin
         brn_tkn = 0;
         rs2_shamt_sel = 0;
         WB_sel = 1;//alu
+        d_RW =0;//don't need to write
 
     end
 
@@ -79,6 +83,7 @@ always @(inst) begin
         brn_tkn = 1;
         rs2_shamt_sel=0;
         WB_sel = 0; //doesn't matter
+        d_RW = 0;//dont need to write
     end
 
     else if(((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) begin
@@ -90,6 +95,7 @@ always @(inst) begin
         brn_tkn = 0;
         rs2_shamt_sel =0;
         WB_sel = 0; //doesn't matter
+        d_RW = 1;//need to write
     end
 
     else if((opcode[6:4] & 3'b111) == 7)begin
@@ -101,12 +107,14 @@ always @(inst) begin
         brn_tkn =0;
         rs2_shamt_sel = 0;
         WB_sel = 0;// doesn't matter
+        d_RW = 0 ; //dont need to write
     end
     else begin
         //i & R
         imm = {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]};
         //bsel
         b_sel = (!opcode[5] | opcode[6]);
+        d_RW = 0; //don't need to write
         //x1xxxxx
         if(!opcode[4])begin
             alu_sel = 0;//add
