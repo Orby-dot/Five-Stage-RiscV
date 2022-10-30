@@ -135,7 +135,7 @@ branch_comp brn_cmpr(
 
 
 ALU alu(
-  .in_a((pc_reg1_sel)? data_rs1 : address),
+  .in_a((pc_reg1_sel)? address-4: data_rs1 ),
   .in_b((b_sel)? imm : ((rs2_shamt_sel)?data_rs2:{{27{1'b0}},shamt})),
   .control(alu_sel),
   .out(alu_out)

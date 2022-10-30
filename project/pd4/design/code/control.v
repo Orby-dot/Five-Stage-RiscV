@@ -43,7 +43,7 @@ always @(inst) begin
     if(((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ))begin
         //B
 
-        imm = {{20{inst[31]}},inst[11],inst[30:25],inst[11:8],1'b0};
+        imm = {{20{inst[31]}},inst[7],inst[30:25],inst[11:8],1'b0};
 
         b_sel = 1'b1; //use imm
         alu_sel = 0; //add
