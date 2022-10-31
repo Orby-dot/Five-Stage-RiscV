@@ -20,6 +20,7 @@ assign data_rs1 = (addr_rs1 == 0) ?  0: reg_mem[addr_rs1-1]; //rs1
 assign data_rs2 = (addr_rs2 == 0) ?  0: reg_mem[addr_rs2-1]; //rs2
 integer x;
 initial begin
+  reg_mem[0] = `MEM_DEPTH + 32'h01000000;
   reg_mem[1] = `MEM_DEPTH + 32'h01000000;
   for (x = 2; x<32 ; x = x+1)begin 
     reg_mem[x] = 0;
