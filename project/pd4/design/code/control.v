@@ -42,6 +42,9 @@ assign unsign = funct3[1];
 always @(inst) begin 
     if(((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ))begin
         //B
+        // if(inst != 0) begin
+        //     $display ("IN B FORMAT %D",inst);
+        // end
 
         imm = {{20{inst[31]}},inst[7],inst[30:25],inst[11:8],1'b0};
 
@@ -64,6 +67,9 @@ always @(inst) begin
     end
     else if(((opcode & 7'b001_0100) ==20) && ((~opcode & 7'b100_0000) == 64 ))begin
         //U
+        // if(inst != 0) begin
+        //     $display ("IN U FORMAT %D",inst);
+        // end
         imm ={inst[31],inst[30:20],inst[19:12],{12{1'b0}}};
         b_sel = 1'b1;//use imm
         alu_sel = 0; //add
@@ -77,9 +83,12 @@ always @(inst) begin
 
     end
 
-    else if(((opcode & 7'b100_0100) == 68) && ((~opcode & 7'b001_0000) == 16 )) begin
+    else if(((opcode & 7'b100_1100) == 76) && ((~opcode & 7'b001_0000) == 16 )) begin
         //J
-        imm ={{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0};
+        // if(inst != 0) begin
+        //     $display ("IN J FORMAT %D",inst);
+        // end
+        imm =({{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0})<<1;
         b_sel = 1'b1;//use imm
         alu_sel = 0;//add
         pc_reg1_sel = 1;//select pc
@@ -92,6 +101,9 @@ always @(inst) begin
 
     else if(((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) begin
         //s
+        // if(inst != 0) begin
+        //     $display ("IN S FORMAT %D",inst);
+        // end
         imm ={{21{inst[31]}},inst[30:25],inst[11:8],inst[7]};
         b_sel = 1'b1; //use imm
         alu_sel = 0; //add
@@ -117,12 +129,15 @@ always @(inst) begin
     end
     else begin
         //i & R
+        // if(inst != 0) begin
+        //     $display ("IN I FORMAT %D",inst);
+        // end
         imm = {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]};
         //bsel
         b_sel = (!opcode[5] | opcode[6]);
         write_back = 1;//write to regfile
         d_RW = 0; //don't need to write to dmem
-        //x1xxxxx
+        //xx1xxxx
         if(!opcode[4])begin
             alu_sel = 0;//add
             rs2_shamt_sel = 0;
@@ -132,7 +147,7 @@ always @(inst) begin
             alu_sel = {(~opcode[5]&(funct3[0])&funct7[5]),funct3}; //control bits for alu
             rs2_shamt_sel = (funct3[0]) && ~(funct3[1] & funct3[2]);
         end
-
+    
         pc_reg1_sel = 0;
         
 

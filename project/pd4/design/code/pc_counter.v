@@ -21,7 +21,7 @@ always @(posedge clock) begin
   else
     case (PC_sel)
     1'b0:pc = pc + 4;
-    1'b1:pc = alu;
+    1'b1:pc = (alu & 32'hfffffffe);
     endcase
   //$display("PC = %h   FC = %h ", address,data_out);
   end
