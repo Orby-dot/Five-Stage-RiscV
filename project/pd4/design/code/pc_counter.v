@@ -10,7 +10,7 @@ module pc_counter (
 );
 
 initial begin
-    pc = 32'h01000000 -4;
+    pc = 32'h01000000;
 end
 
 

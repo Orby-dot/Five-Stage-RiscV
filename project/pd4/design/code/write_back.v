@@ -12,7 +12,7 @@ always@(*)begin
     case(WB_sel)
     2'b00: wb = data_r;
     2'b01: wb = alu;
-    2'b10: wb = pc + 4;
+    2'b10: wb = pc+4;
     2'b11: wb = 0;
     endcase
 end

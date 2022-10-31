@@ -61,8 +61,10 @@ wire [31:0] dmem_data_R;
 
 //WRITE BACK-------------------------------------- 
 wire [1:0] WB_sel;
+//--------------------
 assign e_pc= (brn_tkn) ? alu_out:address;
 assign access_size = funct3[1:0];
+
 //
 
 //pc counter
@@ -164,7 +166,5 @@ write_back w_back(
   .WB_sel(WB_sel),
   .wb(data_rd)
 );
-
-
 
 endmodule
