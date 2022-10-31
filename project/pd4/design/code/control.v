@@ -134,17 +134,17 @@ always @(inst) begin
         // end
         imm = {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]};
         //bsel
-        b_sel = (!opcode[5] | opcode[6]);
+        b_sel = ((!opcode[5] | opcode[6])&&~(opcode[4] && funct3[0] &&~funct3[1]));
         write_back = 1;//write to regfile
         d_RW = 0; //don't need to write to dmem
-        //xx1xxxx
+        //xx0xxxx
         if(!opcode[4])begin
             alu_sel = 0;//add
             rs2_shamt_sel = 0;
         end
-        //xx0xxxx 
+        //xx1xxxx 
         else begin
-            alu_sel = {( ~opcode[5] & (funct3[0]) & funct7[5] ), funct3}; //control bits for alu
+            alu_sel = {(( ~opcode[5] & (funct3[0]) & funct7[5] ) || ((funct3 == 3'b011) && ~opcode[5]) ), funct3}; //control bits for alu
             rs2_shamt_sel = (funct3[0]) && ~(funct3[1] & funct3[2]);
         end
     
