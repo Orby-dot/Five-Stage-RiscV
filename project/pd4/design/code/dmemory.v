@@ -19,6 +19,22 @@ reg [7:0] memory [`MEM_DEPTH]; //actual main memory
 wire [31:0] trueAddr;
 assign trueAddr = (address-32'h01000000);
 integer x;
+initial begin
+    // temp array
+    reg [31:0]temp_array [`LINE_COUNT];
+
+    // load data into temp array
+    $readmemh(`MEM_PATH, temp_array);
+    
+    // move data into main memory
+    for(x= 0 ; x < `LINE_COUNT ; x = x +1)begin
+      memory[x*4] = temp_array[x][7:0];
+      memory[x*4 + 1] = temp_array[x][15:8];
+      memory[x*4+ 2] = temp_array[x][23:16];
+      memory[x*4 + 3] = temp_array[x][31:24];
+    end
+
+  end
   
 always @(*) begin
   // $display("Addr %h", address);
