@@ -32,7 +32,7 @@
 `define M_ADDRESS           alu_out
 `define M_RW                d_RW
 `define M_SIZE_ENCODED      access_size
-`define M_DATA              data_rs2
+`define M_DATA              dmem_data_R
 
 `define W_PC                e_pc
 `define W_ENABLE            WB_sel

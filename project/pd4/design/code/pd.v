@@ -156,7 +156,11 @@ dmemory d_mem(
 write_back w_back(
   .pc(address),
   .alu(alu_out),
-  .data_r(dmem_data_R),
+  .data_r(
+    (access_size == 0) ? ({{24{1'b0}}, dmem_data_R[7:0]}):
+    (access_size == 1) ? ({{16{1'b0}}, dmem_data_R[15:0]}):
+                        dmem_data_R
+    ),
   .WB_sel(WB_sel),
   .wb(data_rd)
 );
