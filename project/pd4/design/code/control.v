@@ -85,8 +85,8 @@ always @(inst) begin
         pc_reg1_sel = 1;//select pc
         brn_tkn = 1;
         rs2_shamt_sel=0;
-        WB_sel = 0; //doesn't matter
-        write_back = 0;//no write to regfile
+        WB_sel = 2; //select pc to write back
+        write_back = 1;//no write to regfile
         d_RW = 0;//dont need to write
     end
 
@@ -134,19 +134,22 @@ always @(inst) begin
         end
 
         pc_reg1_sel = 0;
-        brn_tkn= 0;
+        
 
         //for wb sel
         //1xxxxxx
         if(opcode[6]) begin
             WB_sel = 2;// pc+4
+            brn_tkn= 1;//want to jump
         end
         //xx1xxxx
         else if(opcode[4]) begin
             WB_sel = 1;//alu
+            brn_tkn= 0;
         end
         else begin
             WB_sel = 0; //mem
+            brn_tkn= 0;
         end
 
     end
