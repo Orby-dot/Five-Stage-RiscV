@@ -90,7 +90,44 @@ reg [1:0] D_M_access_size_WB;
 
 assign D_access_size_M_WB = funct3[1:0];
 
-//
+////////////////////
+// DAISY CHAINING //
+////////////////////
+
+always@(posedge clock) begin
+  // F_address_E_WB
+  F_D_address_E_WB = F_address_E_WB;
+  F_E_address_WB = F_D_address_E_WB;
+  F_M_address_WB = F_E_address_WB;
+
+  // D_brn_tkn_F
+  D_E_brn_tkn_F = D_brn_tkn_F;
+  D_M_brn_tkn_F = D_E_brn_tkn_F;
+  D_WB_brn_tkn_F = D_M_brn_tkn_F;
+
+  // D_wb_sel_WB
+  D_E_wb_sel_WB = D_wb_sel_WB;
+  D_M_wb_sel_WB = D_E_wb_sel_WB;
+
+  // D_d_rw_M
+  D_E_d_rw_M = D_d_rw_M;
+
+  // D_data_rs2_E_M
+  D_E_data_rs2_M = D_data_rs2_E_M;
+
+  // E_alu_out_M_WB_F 
+  E_M_alu_out_WB_F = E_alu_out_M_WB_F;
+  E_WB_alu_out_F = E_M_alu_out_WB_F;
+
+  // WB_data_rd_D
+  WB_F_data_rd_D = WB_data_rd_D;
+
+  // D_access_size_M_WB
+  D_E_access_size_M_WB = D_access_size_M_WB;
+  D_M_access_size_WB = D_E_access_size_M_WB;
+end
+
+/////////////////
 
 //pc counter
 pc_counter pc (
