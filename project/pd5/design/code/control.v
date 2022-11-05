@@ -1,6 +1,7 @@
 /*
 This will exist in DECODE
 Will generate all signals 
+NOTE TO SELF WILL NEED AN OR IN PD FOR BRK TKN!!!!!!
 */
 module control (
     input wire [31:0]   inst,
@@ -27,6 +28,8 @@ module control (
         //branch
     output reg         brn_tkn,   
     output reg         unsign,
+    output reg [1:0]   brn_control, //tells brn control which branch to take
+    output reg         brn_enable, //if 1 = enables brk_tk to be 1 if branch is taken
         //memory
     output reg         d_RW //1 = write
         //write back
@@ -58,8 +61,10 @@ always @(inst) begin
         pc_reg1_sel = 1; //want to add to the pc
         rs2_shamt_sel=0; //DC
 
-        //alu
+        //excute
         alu_sel = 0; //add
+        brn_control = {funct3[2],funct3[0]};//get code
+        brn_enable = 1;//turn on brn control
 
         //memory
         d_RW = 0;//don't need to write
@@ -67,14 +72,6 @@ always @(inst) begin
         //writeback
         WB_sel = 0; //doesn't matter
         write_back = 0;//no write to regfile
-
-        //for branch compare
-        case ({funct3[2],funct3[0]})
-            2'b00: brn_tkn = br_eq;
-            2'b01: brn_tkn = ~br_eq;
-            2'b10: brn_tkn = br_lt;
-            2'b11: brn_tkn = ~br_lt;
-        endcase 
 
     end
 //----------------------------------------------------------------------------------------------//
@@ -90,7 +87,8 @@ always @(inst) begin
 
         //excute
         alu_sel = 0; //add
-        brn_tkn = 0;
+        brn_enable = 0; //Don't need branch
+        branch_control = 0;//DC
 
         //memory
         d_RW =0;//don't need to write
@@ -114,6 +112,8 @@ always @(inst) begin
         //excute
         alu_sel = 0;//add
         brn_tkn = 1;
+        brn_enable = 0; //Don't need branch
+        branch_control = 0;//DC
 
         //memory
         d_RW = 0;//dont need to write
@@ -137,6 +137,8 @@ always @(inst) begin
         //excute
         alu_sel = 0; //add
         brn_tkn = 0;
+        brn_enable = 0; //Don't need branch
+        branch_control = 0;//DC
 
         //memory 
          d_RW = 1;//need to write
@@ -161,6 +163,8 @@ always @(inst) begin
         //excute
         alu_sel = 0 ; //add
         brn_tkn =0;
+        brn_enable = 0; //Don't need branch
+        branch_control = 0;//DC
 
         //memory
         d_RW = 0 ; //dont need to write
@@ -196,7 +200,10 @@ always @(inst) begin
 
         //write back and brtk
         write_back = 1;//write to regfile
-        
+
+        brn_enable = 0; //Don't need branch
+        branch_control = 0;//DC
+
         //for wb sel and brtk
         //1xxxxxx
         if(opcode[6]) begin
