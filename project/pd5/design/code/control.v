@@ -1,10 +1,14 @@
-
+/*
+This will exist in DECODE
+Will generate all signals 
+NOTE TO SELF WILL NEED AN OR IN PD FOR BRK TKN!!!!!!
+*/
 module control (
-    //input wire inst_rdy,
     input wire [31:0]   inst,
     input wire         br_eq,
     input wire         br_lt,
 
+    //probes
     output reg [6:0]   opcode,
     output reg [4:0]   rd,
     output reg [4:0]   rs1,
@@ -14,22 +18,27 @@ module control (
     output reg [31:0]  imm,
     output reg [4:0]   shamt,
 
+    //control signals
+        //Reg signals
     output reg         b_sel,         //0 if rs2, 1 if imm
-    output reg [3:0]   alu_sel,
     output reg         pc_reg1_sel,    //0 if rs1, 1 is pc 
-    output reg         brn_tkn,   
     output reg         rs2_shamt_sel, //0 if rs2, 1 if shamt
-
+        //alu
+    output reg [3:0]   alu_sel,
+        //branch
+    output reg         pc_jump,   //forces pc to jump to what alu calculates
     output reg         unsign,
-    //output reg [1:0]   access_size,//0 = 1 byte, 1 = half-word, 2 = fullword
-
+    output reg [1:0]   brn_control, //tells brn control which branch to take
+    output reg         brn_enable, //if 1 = enables brk_tk to be 1 if branch is taken
+        //memory
+    output reg         d_RW //1 = write
+        //write back
     output reg [1:0]   WB_sel,  // 0 = mem, 1= alu, 2 = pc+4
     output reg         write_back, //if we should write back to reg file
 
-    output reg         d_RW //1 = write
-
 );
 
+//hardcode assigns, they do not change with type :D
 assign opcode = inst[6:0];
 assign rd =     inst[11:7];
 assign rs1 =    inst[19:15];
@@ -39,104 +48,144 @@ assign funct7 = inst[31:25];
 assign shamt =  inst[24:20];
 assign unsign = funct3[1];
 
+//This can be always @(*) but this is more clear
 always @(inst) begin 
+    //1xx0x0xx
+    //B type
     if(((opcode & 7'b100_0000) == 64) && ((~opcode & 7'b001_0100) == 20 ))begin
-        //B
-        // if(inst != 0) begin
-        //     $display ("IN B FORMAT %D",inst);
-        // end
 
         imm = {{20{inst[31]}},inst[7],inst[30:25],inst[11:8],1'b0};
 
-        b_sel = 1'b1; //use imm
-        alu_sel = 0; //add
+        //reg select
+        b_sel = 1'b1; //use imm instead of rs2
         pc_reg1_sel = 1; //want to add to the pc
-        rs2_shamt_sel=0;
-        WB_sel = 0; //doesn't matter
-        write_back = 0;//no write to regfile
+        rs2_shamt_sel=0; //DC
+
+        //excute
+        alu_sel = 0; //add
+        brn_control = {funct3[2],funct3[0]};//get code
+        brn_enable = 1;//turn on brn control
+        pc_jump = 0;
+
+        //memory
         d_RW = 0;//don't need to write
 
-        //for branch compare
-        case ({funct3[2],funct3[0]})
-            2'b00: brn_tkn = br_eq;
-            2'b01: brn_tkn = ~br_eq;
-            2'b10: brn_tkn = br_lt;
-            2'b11: brn_tkn = ~br_lt;
-        endcase 
-
-    end
-    else if(((opcode & 7'b001_0100) ==20) && ((~opcode & 7'b100_0000) == 64 ))begin
-        //U
-        // if(inst != 0) begin
-        //     $display ("IN U FORMAT %D",inst);
-        // end
-        imm ={inst[31],inst[30:20],inst[19:12],{12{1'b0}}};
-        b_sel = 1'b1;//use imm
-        alu_sel = 0; //add
-
-        pc_reg1_sel = ~opcode[5];// auipc 
-        brn_tkn = 0;
-        rs2_shamt_sel = 0;
-        WB_sel = 1;//alu
-        write_back = 1; //write back to regfile
-        d_RW =0;//don't need to write
-
-    end
-
-    else if(((opcode & 7'b100_1100) == 76) && ((~opcode & 7'b001_0000) == 16 )) begin
-        //J
-        // if(inst != 0) begin
-        //     $display ("IN J FORMAT %D",inst);
-        // end
-        imm =({{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0})<<1;
-        b_sel = 1'b1;//use imm
-        alu_sel = 0;//add
-        pc_reg1_sel = 1;//select pc
-        brn_tkn = 1;
-        rs2_shamt_sel=0;
-        WB_sel = 2; //select pc to write back
-        write_back = 1;//no write to regfile
-        d_RW = 0;//dont need to write
-    end
-
-    else if(((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) begin
-        //s
-        // if(inst != 0) begin
-        //     $display ("IN S FORMAT %D",inst);
-        // end
-        imm ={{21{inst[31]}},inst[30:25],inst[11:8],inst[7]};
-        b_sel = 1'b1; //use imm
-        alu_sel = 0; //add
-        pc_reg1_sel = 0;
-        brn_tkn = 0;
-        rs2_shamt_sel =0;
+        //writeback
         WB_sel = 0; //doesn't matter
         write_back = 0;//no write to regfile
-        d_RW = 1;//need to write
-    end
 
+    end
+//----------------------------------------------------------------------------------------------//
+    //0xx1x1xx
+    //U type
+    else if(((opcode & 7'b001_0100) ==20) && ((~opcode & 7'b100_0000) == 64 ))begin
+        imm ={inst[31],inst[30:20],inst[19:12],{12{1'b0}}};
+
+        //reg select
+        b_sel = 1'b1;//use imm instead of rs2
+        pc_reg1_sel = ~opcode[5];// auipc 
+        rs2_shamt_sel = 0; //DC
+
+        //excute
+        alu_sel = 0; //add
+        brn_enable = 0; //Don't need branch
+        branch_control = 0;//DC
+        pc_jump = 0;
+
+        //memory
+        d_RW =0;//don't need to write
+
+        //write back
+        WB_sel = 1;//alu
+        write_back = 1; //write back to regfile
+
+    end
+//----------------------------------------------------------------------------------------------//
+    //1x011xx
+    //J type
+    else if(((opcode & 7'b100_1100) == 76) && ((~opcode & 7'b001_0000) == 16 )) begin
+        imm =({{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0})<<1;
+
+        //reg select
+        b_sel = 1'b1;//use imm
+        pc_reg1_sel = 1;//select pc
+        rs2_shamt_sel=0;
+
+        //excute
+        alu_sel = 0;//add
+        pc_jump = 1;
+        brn_enable = 0; //Don't need branch
+        branch_control = 0;//DC
+
+        //memory
+        d_RW = 0;//dont need to write
+
+        //write back
+        WB_sel = 2; //select pc to write back
+        write_back = 1;//no write to regfile
+        
+    end
+//----------------------------------------------------------------------------------------------//
+    //010xxxx
+    //S type
+    else if(((opcode[6:4] & 3'b010) ==2) && ((~opcode[6:4] & 3'b101) == 5 )) begin
+        imm ={{21{inst[31]}},inst[30:25],inst[11:8],inst[7]};
+
+        //reg select
+        b_sel = 1'b1; //use imm nstead of rs2
+        pc_reg1_sel = 0; //use rs1
+        rs2_shamt_sel =0; //DC
+
+        //excute
+        alu_sel = 0; //add
+        pc_jump = 0;
+        brn_enable = 0; //Don't need branch
+        branch_control = 0;//DC
+
+        //memory 
+         d_RW = 1;//need to write
+
+        //write back
+        WB_sel = 0; //doesn't matter
+        write_back = 0;//no write to regfile
+       
+    end
+//----------------------------------------------------------------------------------------------//
+    //111xxx
+    //ECALL
     else if((opcode[6:4] & 3'b111) == 7)begin
-        //ecal
+
         imm= {32{1'b0}};
+
+        //reg select
         b_sel = 1'b0;
-        alu_sel = 0 ; //add
         pc_reg1_sel = 0;
-        brn_tkn =0;
         rs2_shamt_sel = 0;
+
+        //excute
+        alu_sel = 0 ; //add
+        pc_jump =0;
+        brn_enable = 0; //Don't need branch
+        branch_control = 0;//DC
+
+        //memory
+        d_RW = 0 ; //dont need to write
+        
+        //write back
         WB_sel = 0;// doesn't matter
         write_back = 0;//no write to regfile
-        d_RW = 0 ; //dont need to write
+        
     end
+//----------------------------------------------------------------------------------------------//
+    //I ad R type
     else begin
-        //i & R
-        // if(inst != 0) begin
-        //     $display ("IN I FORMAT %D",inst);
-        // end
+
         imm = {{21{inst[31]}},inst[30:25],inst[24:21],inst[20]};
-        //bsel
+
+        //reg select
         b_sel = ((!opcode[5] | opcode[6])&&~(opcode[4] && funct3[0] &&~funct3[1]));
-        write_back = 1;//write to regfile
-        d_RW = 0; //don't need to write to dmem
+        pc_reg1_sel = 0;
+        //rs2/shmat and alu sel
         //xx0xxxx
         if(!opcode[4])begin
             alu_sel = 0;//add
@@ -147,24 +196,31 @@ always @(inst) begin
             alu_sel = {(( ~opcode[5] & (funct3[0]) & funct7[5] ) || ((funct3 == 3'b011) && ~opcode[5]) ), funct3}; //control bits for alu
             rs2_shamt_sel = (funct3[0]) && ~(funct3[1] & funct3[2]);
         end
-    
-        pc_reg1_sel = 0;
-        
 
-        //for wb sel
+        //memory
+        d_RW = 0; //don't need to write to dmem
+
+        //write back and brtk
+        write_back = 1;//write to regfile
+
+        brn_enable = 0; //Don't need branch
+        branch_control = 0;//DC
+
+        //for wb sel and brtk
         //1xxxxxx
+        //for jalr
         if(opcode[6]) begin
             WB_sel = 2;// pc+4
-            brn_tkn= 1;//want to jump
+            pc_jump= 1;//want to jump
         end
         //xx1xxxx
         else if(opcode[4]) begin
             WB_sel = 1;//alu
-            brn_tkn= 0;
+            pc_jump= 0;
         end
         else begin
             WB_sel = 0; //mem
-            brn_tkn= 0;
+            pc_jump= 0;
         end
 
     end

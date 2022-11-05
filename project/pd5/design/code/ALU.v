@@ -1,18 +1,20 @@
 /* CONTROL LIST
-    000 = add
-    default (010)= sub
-    001 = SHIFT L signed
-    011 = SHIFT L unsigned
-    101 = SHIFT R normal 
-    110 = SHIFT R arithmetric
-    100 = XOR
-    110 = OR
-    111 = AND
+    0000 = add
+    default (0100)= sub
+    0001 = SHIFT L signed
+    0011 = SHIFT L unsigned
+    0101 = SHIFT R normal 
+    1101 = SHIFT R arithmetric
+    0100 = XOR
+    0110 = OR
+    0111 = AND
+    0010 = Set if less than signed
+    1011 = Set if less than unsigned
 */
 module ALU(
     input wire[31:0] in_a,
     input wire[31:0] in_b,
-    input wire [3:0]  control, // funct7[5], funct3
+    input wire [3:0]  control, // {funct7[5], funct3}
     output reg [31:0] out
 );
 always@(in_a,in_b,control)begin
