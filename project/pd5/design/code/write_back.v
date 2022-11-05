@@ -1,4 +1,5 @@
 //may not have to make this a sepreate module
+//note to self, will keep this cuz its easier to use
 
 module write_back (
     input wire  [31:0]  pc,
