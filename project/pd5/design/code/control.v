@@ -26,7 +26,7 @@ module control (
         //alu
     output reg [3:0]   alu_sel,
         //branch
-    output reg         brn_tkn,   
+    output reg         pc_jump,   //forces pc to jump to what alu calculates
     output reg         unsign,
     output reg [1:0]   brn_control, //tells brn control which branch to take
     output reg         brn_enable, //if 1 = enables brk_tk to be 1 if branch is taken
@@ -65,6 +65,7 @@ always @(inst) begin
         alu_sel = 0; //add
         brn_control = {funct3[2],funct3[0]};//get code
         brn_enable = 1;//turn on brn control
+        pc_jump = 0;
 
         //memory
         d_RW = 0;//don't need to write
@@ -89,6 +90,7 @@ always @(inst) begin
         alu_sel = 0; //add
         brn_enable = 0; //Don't need branch
         branch_control = 0;//DC
+        pc_jump = 0;
 
         //memory
         d_RW =0;//don't need to write
@@ -111,7 +113,7 @@ always @(inst) begin
 
         //excute
         alu_sel = 0;//add
-        brn_tkn = 1;
+        pc_jump = 1;
         brn_enable = 0; //Don't need branch
         branch_control = 0;//DC
 
@@ -136,7 +138,7 @@ always @(inst) begin
 
         //excute
         alu_sel = 0; //add
-        brn_tkn = 0;
+        pc_jump = 0;
         brn_enable = 0; //Don't need branch
         branch_control = 0;//DC
 
@@ -162,7 +164,7 @@ always @(inst) begin
 
         //excute
         alu_sel = 0 ; //add
-        brn_tkn =0;
+        pc_jump =0;
         brn_enable = 0; //Don't need branch
         branch_control = 0;//DC
 
@@ -206,18 +208,19 @@ always @(inst) begin
 
         //for wb sel and brtk
         //1xxxxxx
+        //for jalr
         if(opcode[6]) begin
             WB_sel = 2;// pc+4
-            brn_tkn= 1;//want to jump
+            pc_jump= 1;//want to jump
         end
         //xx1xxxx
         else if(opcode[4]) begin
             WB_sel = 1;//alu
-            brn_tkn= 0;
+            pc_jump= 0;
         end
         else begin
             WB_sel = 0; //mem
-            brn_tkn= 0;
+            pc_jump= 0;
         end
 
     end
