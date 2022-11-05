@@ -5,62 +5,62 @@ module pd(
 
 //wires
 //FETCH --------------------
-wire [31:0]     address;
+reg [31:0]     address;
 wire            read_write;//unused
 
 wire [31:0]     data_in;//unused
-wire [31:0]     inst;
+reg [31:0]     inst;
 //------------------------
 //DECODE
 wire [6:0]      opcode;
 
-wire [4:0]      addr_rd;
-wire [4:0]      addr_rs1;
-wire [4:0]      addr_rs2;
+reg [4:0]      addr_rd;
+reg [4:0]      addr_rs1;
+reg [4:0]      addr_rs2;
 
 wire [2:0]      funct3;
 wire [6:0]      funct7;
 
-wire [31:0]     imm;
+reg [31:0]     imm;
 
-wire [4:0]      shamt;
+reg [4:0]      shamt;
 
-wire            b_sel;
-wire [3:0]      alu_sel;
-wire            pc_reg1_sel;
-wire            brn_tkn;
+reg            b_sel;
+reg [3:0]      alu_sel;
+reg            pc_reg1_sel;
+reg            brn_tkn;
 
 wire [31:0]     e_pc;//effective pc after excute
 
-wire [31:0]     alu_out;
-wire            rs2_shamt_sel;
+reg [31:0]     alu_out;
+reg            rs2_shamt_sel;
 
 //---------------
 //REG FILE---------------------------------------------
-wire [31:0] data_rs1;
-wire [31:0] data_rs2;
-wire [31:0] data_rd;
-wire write_enable;
+reg [31:0] data_rs1;
+reg [31:0] data_rs2;
+reg [31:0] data_rd;
+reg write_enable;
 
 //--------------------------------------------
 //brch
 
-wire         unsign;
-wire         br_eq;
-wire         br_lt;
+reg         unsign;
+reg         br_eq;
+reg         br_lt;
 //
 //ALU-----------------------------------------------
-wire [31:0] alu_out;
+reg [31:0] alu_out;
 //
 
 //DMEM---------------------------------------------------
-wire d_RW;
-wire [1:0] access_size;
-wire [31:0] dmem_data_R;
+reg d_RW;
+reg [1:0] access_size;
+reg [31:0] dmem_data_R;
 //
 
 //WRITE BACK-------------------------------------- 
-wire [1:0] WB_sel;
+reg [1:0] WB_sel;
 //--------------------
 assign e_pc= (brn_tkn) ? alu_out:address;
 assign access_size = funct3[1:0];
