@@ -3,67 +3,67 @@ module pd(
   input reset
 );
 
+
+// naming scheme: SOURCE + name + DESTINATION LIST
 //wires
 //FETCH --------------------
-reg [31:0]     address;
-wire            read_write;//unused
+reg [31:0]     F_address_E_WB;  // from PC module
+wire           read_write;//unused
 
-wire [31:0]     data_in;//unused
-reg [31:0]     inst;
+wire [31:0]    data_in;//unused
+reg [31:0]     F_inst_D;  // from imem module
 //------------------------
 //DECODE
 wire [6:0]      opcode;
 
-reg [4:0]      addr_rd;
-reg [4:0]      addr_rs1;
-reg [4:0]      addr_rs2;
+wire [4:0]      addr_rd;
+wire [4:0]      addr_rs1;
+wire [4:0]      addr_rs2;
 
 wire [2:0]      funct3;
 wire [6:0]      funct7;
 
-reg [31:0]     imm;
+reg [31:0]      D_imm_E;
 
-reg [4:0]      shamt;
+reg [4:0]       D_shamt_E;
 
-reg            b_sel;
-reg [3:0]      alu_sel;
-reg            pc_reg1_sel;
-reg            brn_tkn;
+reg             D_b_sel_E;
+reg [3:0]       D_alu_sel_E;
+reg             D_pc_reg1_sel_E;
+reg             D_brn_tkn_F;  // daisy chained through remaining stages
 
-wire [31:0]     e_pc;//effective pc after excute
 
-reg [31:0]     alu_out;
-reg            rs2_shamt_sel;
+reg             D_rs2_shamt_sel_E;
+
+reg             D_unsign_E;
+reg             D_d_rw_M;
 
 //---------------
 //REG FILE---------------------------------------------
-reg [31:0] data_rs1;
-reg [31:0] data_rs2;
-reg [31:0] data_rd;
-reg write_enable;
+reg [31:0] D_data_rs1_E;
+reg [31:0] D_data_rs2_E;
+wire write_enable;
 
 //--------------------------------------------
 //brch
 
-reg         unsign;
-reg         br_eq;
-reg         br_lt;
+reg         E_br_eq_D;
+reg         E_br_lt_D;
 //
 //ALU-----------------------------------------------
-reg [31:0] alu_out;
+reg [31:0]     E_alu_out_M_WB_F;
 //
 
 //DMEM---------------------------------------------------
-reg d_RW;
-reg [1:0] access_size;
-reg [31:0] dmem_data_R;
+reg [31:0]    M_data_R;
 //
 
 //WRITE BACK-------------------------------------- 
-reg [1:0] WB_sel;
+reg [1:0]   WB_wb_out_D;
 //--------------------
-assign e_pc= (brn_tkn) ? alu_out:address;
-assign access_size = funct3[1:0];
+
+reg [1:0] D_access_size_M_WB;
+assign D_access_size_M_WB = funct3[1:0];
 
 //
 
@@ -109,7 +109,7 @@ control decode(
     .unsign(unsign),
     .WB_sel(WB_sel),
     .write_back(write_enable),
-    .d_RW(d_RW)
+    .d_RW(d_rw)
 );
 
 register_file reg_file(
@@ -148,10 +148,10 @@ ALU alu(
 
 dmemory d_mem(
   .address(alu_out),
-  .read_write(d_RW),
+  .read_write(d_rw),
   .data_in(data_rs2),
   .access_size(access_size),
-  .data_out(dmem_data_R)
+  .data_out(M_data_R)
 );
 
 
@@ -160,9 +160,9 @@ write_back w_back(
   .pc(address),
   .alu(alu_out),
   .data_r(
-    (access_size == 0) ? ({{24{1'b0}}, dmem_data_R[7:0]}):
-    (access_size == 1) ? ({{16{1'b0}}, dmem_data_R[15:0]}):
-                        dmem_data_R
+    (access_size == 0) ? ({{24{1'b0}}, M_data_R[7:0]}):
+    (access_size == 1) ? ({{16{1'b0}}, M_data_R[15:0]}):
+                        M_data_R
     ),
   .WB_sel(WB_sel),
   .wb(data_rd)
