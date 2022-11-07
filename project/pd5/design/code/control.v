@@ -5,8 +5,6 @@ NOTE TO SELF WILL NEED AN OR IN PD FOR BRK TKN!!!!!!
 */
 module control (
     input wire [31:0]   inst,
-    input wire         br_eq,
-    input wire         br_lt,
 
     //probes
     output reg [6:0]   opcode,
@@ -31,10 +29,10 @@ module control (
     output reg [1:0]   brn_control, //tells brn control which branch to take
     output reg         brn_enable, //if 1 = enables brk_tk to be 1 if branch is taken
         //memory
-    output reg         d_RW //1 = write
+    output reg         d_RW, //1 = write
         //write back
     output reg [1:0]   WB_sel,  // 0 = mem, 1= alu, 2 = pc+4
-    output reg         write_back, //if we should write back to reg file
+    output reg         write_back //if we should write back to reg file
 
 );
 
@@ -89,7 +87,7 @@ always @(inst) begin
         //excute
         alu_sel = 0; //add
         brn_enable = 0; //Don't need branch
-        branch_control = 0;//DC
+        brn_control = 0;//DC
         pc_jump = 0;
 
         //memory
@@ -115,7 +113,7 @@ always @(inst) begin
         alu_sel = 0;//add
         pc_jump = 1;
         brn_enable = 0; //Don't need branch
-        branch_control = 0;//DC
+        brn_control = 0;//DC
 
         //memory
         d_RW = 0;//dont need to write
@@ -140,7 +138,7 @@ always @(inst) begin
         alu_sel = 0; //add
         pc_jump = 0;
         brn_enable = 0; //Don't need branch
-        branch_control = 0;//DC
+        brn_control = 0;//DC
 
         //memory 
          d_RW = 1;//need to write
@@ -166,7 +164,7 @@ always @(inst) begin
         alu_sel = 0 ; //add
         pc_jump =0;
         brn_enable = 0; //Don't need branch
-        branch_control = 0;//DC
+        brn_control = 0;//DC
 
         //memory
         d_RW = 0 ; //dont need to write
@@ -204,7 +202,7 @@ always @(inst) begin
         write_back = 1;//write to regfile
 
         brn_enable = 0; //Don't need branch
-        branch_control = 0;//DC
+        brn_control = 0;//DC
 
         //for wb sel and brtk
         //1xxxxxx

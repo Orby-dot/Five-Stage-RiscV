@@ -43,7 +43,7 @@ always @(*)begin
   if (write_enable) begin
     //write
     if(addr_rd != 0)
-      reg_mem[addr_rd -1] <= data_rd;
+      reg_mem[addr_rd -1] = data_rd;
   end
 end
 
