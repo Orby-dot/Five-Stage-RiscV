@@ -6,6 +6,5 @@ control.v
 dmemory.v
 imemory.v
 pc_counter.v
-pd.v
 register_file.v
 write_back.v
