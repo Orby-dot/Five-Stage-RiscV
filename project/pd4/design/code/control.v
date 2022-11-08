@@ -88,7 +88,7 @@ always @(inst) begin
         // if(inst != 0) begin
         //     $display ("IN J FORMAT %D",inst);
         // end
-        imm =({{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0})<<1;
+        imm =({{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0});
         b_sel = 1'b1;//use imm
         alu_sel = 0;//add
         pc_reg1_sel = 1;//select pc
