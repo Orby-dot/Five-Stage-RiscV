@@ -17,8 +17,8 @@
 `define D_SHAMT             D_shamt_E
 
 `define R_WRITE_ENABLE      write_enable
-`define R_WRITE_DESTINATION addr_rd
-`define R_WRITE_DATA        D_E_data_rs2_M
+`define R_WRITE_DESTINATION D_WB_addr_rd_WB
+`define R_WRITE_DATA        WB_D_data_rd_D
 `define R_READ_RS1          addr_rs1
 `define R_READ_RS2          addr_rs2
 `define R_READ_RS1_DATA     D_data_rs1_E
@@ -26,17 +26,17 @@
 
 `define E_PC                F_E_address_WB
 `define E_ALU_RES           E_alu_out_M_WB_F
-`define E_BR_TAKEN          D_brn_enable_E
+`define E_BR_TAKEN          D_E_brn_enable_E
 
 `define M_PC                F_M_address_WB
 `define M_ADDRESS           E_M_alu_out_WB_F
-`define M_RW                D_E_d_rw_M
+`define M_RW                D_M_d_rw_M
 `define M_SIZE_ENCODED      D_M_access_size_WB
 `define M_DATA              M_data_r_WB
 
 `define W_PC                F_WB_address_WB
-`define W_ENABLE            D_M_wb_sel_WB
-`define W_DESTINATION       D_M_addr_rd_WB
+`define W_ENABLE            D_WB_wb_sel_WB
+`define W_DESTINATION       D_WB_addr_rd_WB
 `define W_DATA              WB_data_rd_D
 
 // ----- signals -----

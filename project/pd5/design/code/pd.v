@@ -70,10 +70,11 @@ reg [1:0]       D_WB_wb_sel_WB;
 reg             D_write_enable_WB;
 reg             D_E_write_enable_WB;
 reg             D_M_write_enable_WB;
-reg             D_WB_write_enable_WB
+reg             D_WB_write_enable_WB;
 
 reg             D_d_rw_M;
 reg             D_E_d_rw_M;
+reg             D_M_d_rw_M;
 
 //---------------
 //REG FILE---------------------------------------------
@@ -105,20 +106,24 @@ reg [1:0] D_E_brn_signal_E;
 reg [31:0]     E_alu_out_M_WB_F;
 reg [31:0]     E_M_alu_out_WB_F;
 reg [31:0]     E_WB_alu_out_F;
+reg [31:0]     E_F_alu_out_F;
 
 
 //DMEM---------------------------------------------------
 reg [31:0]    M_data_r_WB;
+reg [31:0]    M_WB_data_r_WB;
 
 
 //WRITE BACK-------------------------------------- 
 reg [31:0]   WB_data_rd_D;   // output wb
 reg [31:0]   WB_F_data_rd_D;
+reg [31:0]   WB_D_data_rd_D;
 
 
 reg [1:0] D_access_size_M_WB;
 reg [1:0] D_E_access_size_M_WB;
 reg [1:0] D_M_access_size_WB;
+reg [1:0] D_WB_access_size_WB;
 
 ////////////////////
 // DAISY CHAINING //
@@ -134,7 +139,7 @@ always@(posedge clock) begin
   else begin
     case ((D_F_pc_jump_F || E_F_brn_tkn_F))
       1'b0:F_address_E_WB <= F_address_E_WB + 4;
-      1'b1:F_address_E_WB <= (E_WB_alu_out_F);
+      1'b1:F_address_E_WB <= (E_F_alu_out_F);
     endcase
   end
   D_access_size_M_WB <= funct3[1:0];
@@ -174,10 +179,10 @@ always@(posedge clock) begin
   D_F_pc_jump_F <= D_WB_pc_jump_F;
 
   //rs2_shamt_sel
-  E_rs2_shamt_sel_E <= D_rs2_shamt_sel_E;
+  D_E_rs2_shamt_sel_E <= D_rs2_shamt_sel_E;
 
   //unsign
-  E_unsign_E <= D_unsign_E;
+  D_E_unsign_E <= D_unsign_E;
 
   // wb_sel
   D_E_wb_sel_WB <= D_wb_sel_WB;
@@ -191,17 +196,22 @@ always@(posedge clock) begin
 
   //d_rw
   D_E_d_rw_M <= D_d_rw_M;
+  D_M_d_rw_M <= D_E_d_rw_M;
 
   // data_rs2
   D_E_data_rs2_M <= D_data_rs2_E_M;
   D_M_data_rs3_M <= D_E_data_rs2_M;
 
   //data_rs1
-  E_data_rs1_E <= D_data_rs1_E;
+  D_E_data_rs1_E <= D_data_rs1_E;
 
   //alu_out 
   E_M_alu_out_WB_F <= E_alu_out_M_WB_F;
   E_WB_alu_out_F <= E_M_alu_out_WB_F;
+  E_F_alu_out_F <= E_WB_alu_out_F;
+
+  //data_r
+  M_WB_data_r_WB <= M_data_r_WB;
 
   //brn_tkn
   E_M_brn_tkn_F <= E_brn_tkn_F;
@@ -212,14 +222,17 @@ always@(posedge clock) begin
   D_E_brn_enable_E <= D_brn_enable_E;
 
   //brn_signal
-  D_E_brn_signal_E <= D_brn_signal_E
+  D_E_brn_signal_E <= D_brn_signal_E;
 
-  // WB_data_rd_D
+  //data_rd
   WB_F_data_rd_D <= WB_data_rd_D;
+  WB_D_data_rd_D <= WB_F_data_rd_D;
+  
 
-  // D_access_size_M_WB
+  //access_size
   D_E_access_size_M_WB <= D_access_size_M_WB;
   D_M_access_size_WB <= D_E_access_size_M_WB;
+  D_WB_access_size_WB <= D_M_access_size_WB;
 end
 
 /////////////////
@@ -286,7 +299,7 @@ register_file reg_file(
   .data_rs2(D_data_rs2_E_M),
 
   .addr_rd(D_WB_addr_rd_WB),
-  .data_rd(WB_F_data_rd_D),
+  .data_rd(WB_D_data_rd_D),
   .write_enable(D_WB_write_enable_WB)
 
 );
@@ -302,7 +315,7 @@ branch_control brn_cntr(
 
 branch_comp brn_cmpr(
     .in_a(D_E_data_rs1_E),
-    .in_b(D_E_data_rs3_M),
+    .in_b(D_E_data_rs2_M),
     .unsign(D_E_unsign_E),
     .br_eq(br_eq),
     .br_lt(br_lt)
@@ -312,7 +325,7 @@ branch_comp brn_cmpr(
 ALU alu(
   .in_a((D_E_pc_reg1_sel_E)? F_address_E_WB: D_E_data_rs1_E ),
   .in_b((D_E_b_sel_E) ? D_E_imm_E : 
-        (D_E_rs2_shamt_sel_E) ? {{27{1'b0}},D_E_shamt_E} : D_E_data_rs3_M ),
+        (D_E_rs2_shamt_sel_E) ? {{27{1'b0}},D_E_shamt_E} : D_E_data_rs2_M ),
   .control(D_E_alu_sel_E),
   .out(E_alu_out_M_WB_F)
 );
@@ -320,8 +333,8 @@ ALU alu(
 //Dmemory
 
 dmemory d_mem(
-  .address(E_alu_out_M_WB_F),
-  .read_write(D_E_d_rw_M),
+  .address(E_M_alu_out_WB_F),
+  .read_write(D_M_d_rw_M),
   .data_in(D_M_data_rs3_M),
   .access_size(D_E_access_size_M_WB),
   .data_out(M_data_r_WB)
@@ -331,11 +344,11 @@ dmemory d_mem(
 //WRITE BACK
 write_back w_back(
   .pc(F_M_address_WB),
-  .alu(E_M_alu_out_WB_F),
+  .alu(E_WB_alu_out_F),
   .data_r(
-    (D_M_access_size_WB == 0) ? ({{24{1'b0}}, M_data_r_WB[7:0]}):
-    (D_M_access_size_WB == 1) ? ({{16{1'b0}}, M_data_r_WB[15:0]}):
-                        M_data_r_WB
+    (D_WB_access_size_WB == 0) ? ({{24{1'b0}}, M_WB_data_r_WB[7:0]}):
+    (D_WB_access_size_WB == 1) ? ({{16{1'b0}}, M_WB_data_r_WB[15:0]}):
+                        M_WB_data_r_WB
     ),
   .WB_sel(D_WB_wb_sel_WB),
   .wb(WB_data_rd_D)
