@@ -16,16 +16,17 @@ reg [31:0]     F_M_address_WB;
 reg [31:0]     F_WB_address_WB;
 
 wire           read_write;//unused
-
 wire [31:0]    data_in;//unused
+
 reg [31:0]     F_inst_D;  // from imem module
-//------------------------
+reg [31:0]     D_inst_D;
 //DECODE
 wire [6:0]      opcode;
 
 reg [4:0]       D_addr_rd_WB;
 reg [4:0]       D_E_addr_rd_WB;
 reg [4:0]       D_M_addr_rd_WB;
+reg [4:0]       D_WB_addr_rd_WB;
 //wire [4:0]      addr_rd;
 wire [4:0]      addr_rs1;
 wire [4:0]      addr_rs2;
@@ -34,31 +35,42 @@ wire [2:0]      funct3;
 wire [6:0]      funct7;
 
 reg [31:0]      D_imm_E;
+reg [31:0]      D_E_imm_E;
 
 reg [4:0]       D_shamt_E;
+reg [4:0]       D_E_shamt_E;
 
 reg             D_b_sel_E;
+reg             D_E_b_sel_E;
+
 reg [3:0]       D_alu_sel_E;
+reg [3:0]       D_E_alu_sel_E;
+
 reg             D_pc_reg1_sel_E;
+reg             D_E_pc_reg1_sel_E;
 
 reg             D_pc_jump_F;  // daisy chained through remaining stages
 reg             D_E_pc_jump_F;
 reg             D_M_pc_jump_F;
 reg             D_WB_pc_jump_F;
+reg             D_F_pc_jump_F;
 
 
 reg             D_rs2_shamt_sel_E;
+reg             D_E_rs2_shamt_sel_E;
 
 reg             D_unsign_E;
+reg             D_E_unsign_E; 
 
 reg [1:0]       D_wb_sel_WB;
 reg [1:0]       D_E_wb_sel_WB;
 reg [1:0]       D_M_wb_sel_WB;
+reg [1:0]       D_WB_wb_sel_WB;
 
 reg             D_write_enable_WB;
 reg             D_E_write_enable_WB;
 reg             D_M_write_enable_WB;
-//wire             write_enable;
+reg             D_WB_write_enable_WB
 
 reg             D_d_rw_M;
 reg             D_E_d_rw_M;
@@ -66,61 +78,53 @@ reg             D_E_d_rw_M;
 //---------------
 //REG FILE---------------------------------------------
 reg [31:0] D_data_rs1_E;
-//eg [31:0] E_pc_reg1_sel_E
+reg [31:0] D_E_data_rs1_E;
+
 reg [31:0] D_data_rs2_E_M;
 reg [31:0] D_E_data_rs2_M;
+reg [31:0] D_M_data_rs3_M;
 
 
-//--------------------------------------------
-//brch
+
+//brch----------------------------------------
 wire br_eq;
 wire br_lt;
 
 reg E_brn_tkn_F;
 reg E_M_brn_tkn_F;
 reg E_WB_brn_tkn_F;
+reg E_F_brn_tkn_F;
 
 reg D_brn_enable_E;
+reg D_E_brn_enable_E;
+
 reg [1:0] D_brn_signal_E;
-// reg         E_br_eq_D;  // will be refactored anyways
-// reg         E_br_lt_D;
-//
+reg [1:0] D_E_brn_signal_E;
+
 //ALU-----------------------------------------------
 reg [31:0]     E_alu_out_M_WB_F;
 reg [31:0]     E_M_alu_out_WB_F;
 reg [31:0]     E_WB_alu_out_F;
-//
+
 
 //DMEM---------------------------------------------------
 reg [31:0]    M_data_r_WB;
-//
+
 
 //WRITE BACK-------------------------------------- 
 reg [31:0]   WB_data_rd_D;   // output wb
 reg [31:0]   WB_F_data_rd_D;
-//--------------------
+
 
 reg [1:0] D_access_size_M_WB;
 reg [1:0] D_E_access_size_M_WB;
 reg [1:0] D_M_access_size_WB;
 
-//assign D_access_size_M_WB = funct3[1:0];
-// initial begin
-//   F_address_E_WB
-//   F_D_address_E_WB
-//   F_M_address__WB
-//   F_WB_address_E_WB
-
-// end
 ////////////////////
 // DAISY CHAINING //
 ////////////////////
 initial begin
     F_address_E_WB = 32'h01000000;
-    D_pc_reg1_sel_E = 0;
-    D_data_rs1_E = 0;
-    D_imm_E=0;
-
 end
 
 always@(posedge clock) begin
@@ -128,50 +132,87 @@ always@(posedge clock) begin
     F_address_E_WB <= 32'h01000000;
   
   else begin
-    case ((D_WB_pc_jump_F || E_WB_brn_tkn_F))
+    case ((D_F_pc_jump_F || E_F_brn_tkn_F))
       1'b0:F_address_E_WB <= F_address_E_WB + 4;
       1'b1:F_address_E_WB <= (E_WB_alu_out_F);
     endcase
   end
   D_access_size_M_WB <= funct3[1:0];
-  // F_address_E_WB
+  //address
   F_D_address_E_WB <= F_address_E_WB;
   F_E_address_WB <= F_D_address_E_WB;
   F_M_address_WB <= F_E_address_WB;
   F_WB_address_WB <= F_M_address_WB;
 
-  //D_addr_rd_WB
-  D_E_addr_rd_WB <= D_addr_rd_WB;
-  D_M_addr_rd_WB <= D_addr_rd_WB;
-  //D_write_enable_WB
-  D_E_write_enable_WB <= D_write_enable_WB;
-  D_M_write_enable_WB <= D_E_write_enable_WB;
+  //inst
+  D_inst_D = F_inst_D;
 
-  // D_brn_tkn_F
+  //addr_rd
+  D_E_addr_rd_WB <= D_addr_rd_WB;
+  D_M_addr_rd_WB <= D_E_addr_rd_WB;
+  D_WB_addr_rd_WB <= D_M_addr_rd_WB;
+
+  //imm
+  D_E_imm_E <= D_imm_E;
+  
+  //shamt
+  D_E_shamt_E = D_shamt_E;
+
+  //b_sel
+  D_E_b_sel_E <= D_b_sel_E;
+
+  //alu_sel
+  D_E_alu_sel_E <= D_alu_sel_E;
+
+  //pc_reg1_sel
+  D_E_pc_reg1_sel_E <= D_pc_reg1_sel_E;
+
+  //pc_jump
   D_E_pc_jump_F <= D_pc_jump_F;
   D_M_pc_jump_F <= D_E_pc_jump_F;
   D_WB_pc_jump_F <= D_M_pc_jump_F;
+  D_F_pc_jump_F <= D_WB_pc_jump_F;
 
-  // D_wb_sel_WB
+  //rs2_shamt_sel
+  E_rs2_shamt_sel_E <= D_rs2_shamt_sel_E;
+
+  //unsign
+  E_unsign_E <= D_unsign_E;
+
+  // wb_sel
   D_E_wb_sel_WB <= D_wb_sel_WB;
   D_M_wb_sel_WB <= D_E_wb_sel_WB;
+  D_WB_wb_sel_WB <= D_M_wb_sel_WB;
 
-  // D_d_rw_M
+  //write_enable
+  D_E_write_enable_WB <= D_write_enable_WB;
+  D_M_write_enable_WB <= D_E_write_enable_WB;
+  D_WB_write_enable_WB <= D_M_write_enable_WB;
+
+  //d_rw
   D_E_d_rw_M <= D_d_rw_M;
 
-  // D_data_rs2_E_M
+  // data_rs2
   D_E_data_rs2_M <= D_data_rs2_E_M;
+  D_M_data_rs3_M <= D_E_data_rs2_M;
 
-  //D_pc_reg1_sel_E
-  //E_pc_reg1_sel_E <= D_pc_reg1_sel_E;
+  //data_rs1
+  E_data_rs1_E <= D_data_rs1_E;
 
-  // E_alu_out_M_WB_F 
+  //alu_out 
   E_M_alu_out_WB_F <= E_alu_out_M_WB_F;
   E_WB_alu_out_F <= E_M_alu_out_WB_F;
 
-  //E_brn_tkn_W
+  //brn_tkn
   E_M_brn_tkn_F <= E_brn_tkn_F;
   E_WB_brn_tkn_F <= E_M_brn_tkn_F;
+  E_F_brn_tkn_F <= E_WB_brn_tkn_F;
+
+  //brn_enable
+  D_E_brn_enable_E <= D_brn_enable_E;
+
+  //brn_signal
+  D_E_brn_signal_E <= D_brn_signal_E
 
   // WB_data_rd_D
   WB_F_data_rd_D <= WB_data_rd_D;
@@ -204,7 +245,7 @@ imemory imem (
 
 //decode
 control decode(
-    .inst(F_inst_D),
+    .inst(D_inst_D),
     // .br_eq(E_br_eq_D),  // will be refactored 
     // .br_lt(E_br_lt_D),  // will be refactored
 
@@ -244,35 +285,35 @@ register_file reg_file(
   .addr_rs2(addr_rs2),
   .data_rs2(D_data_rs2_E_M),
 
-  .addr_rd(D_M_addr_rd_WB),
+  .addr_rd(D_WB_addr_rd_WB),
   .data_rd(WB_F_data_rd_D),
-  .write_enable(D_M_write_enable_WB)
+  .write_enable(D_WB_write_enable_WB)
 
 );
 //EXCUTE 
 
 branch_control brn_cntr(
-    .enable(D_brn_enable_E),
-    .eq_or_lt(D_brn_signal_E),
+    .enable(D_E_brn_enable_E),
+    .eq_or_lt(D_E_brn_signal_E),
     .br_eq(br_eq),
     .br_lt(br_lt),
     .br_tk(E_brn_tkn_F)
 );
 
 branch_comp brn_cmpr(
-    .in_a(D_data_rs1_E),
-    .in_b(D_data_rs2_E_M),
-    .unsign(D_unsign_E),
+    .in_a(D_E_data_rs1_E),
+    .in_b(D_E_data_rs3_M),
+    .unsign(D_E_unsign_E),
     .br_eq(br_eq),
     .br_lt(br_lt)
 );
 
 
 ALU alu(
-  .in_a((D_pc_reg1_sel_E)? F_address_E_WB: D_data_rs1_E ),
-  .in_b((D_b_sel_E) ? D_imm_E : 
-        (D_rs2_shamt_sel_E) ? {{27{1'b0}},D_shamt_E} : D_data_rs2_E_M ),
-  .control(D_alu_sel_E),
+  .in_a((D_E_pc_reg1_sel_E)? F_address_E_WB: D_E_data_rs1_E ),
+  .in_b((D_E_b_sel_E) ? D_E_imm_E : 
+        (D_E_rs2_shamt_sel_E) ? {{27{1'b0}},D_E_shamt_E} : D_E_data_rs3_M ),
+  .control(D_E_alu_sel_E),
   .out(E_alu_out_M_WB_F)
 );
 
@@ -281,7 +322,7 @@ ALU alu(
 dmemory d_mem(
   .address(E_alu_out_M_WB_F),
   .read_write(D_E_d_rw_M),
-  .data_in(D_E_data_rs2_M),
+  .data_in(D_M_data_rs3_M),
   .access_size(D_E_access_size_M_WB),
   .data_out(M_data_r_WB)
 );
@@ -296,7 +337,7 @@ write_back w_back(
     (D_M_access_size_WB == 1) ? ({{16{1'b0}}, M_data_r_WB[15:0]}):
                         M_data_r_WB
     ),
-  .WB_sel(D_M_wb_sel_WB),
+  .WB_sel(D_WB_wb_sel_WB),
   .wb(WB_data_rd_D)
 );
 
