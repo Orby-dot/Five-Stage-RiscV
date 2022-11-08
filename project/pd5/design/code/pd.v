@@ -66,6 +66,7 @@ reg             D_E_d_rw_M;
 //---------------
 //REG FILE---------------------------------------------
 reg [31:0] D_data_rs1_E;
+//eg [31:0] E_pc_reg1_sel_E
 reg [31:0] D_data_rs2_E_M;
 reg [31:0] D_E_data_rs2_M;
 
@@ -114,8 +115,24 @@ reg [1:0] D_M_access_size_WB;
 ////////////////////
 // DAISY CHAINING //
 ////////////////////
+initial begin
+    F_address_E_WB = 32'h01000000;
+    D_pc_reg1_sel_E = 0;
+    D_data_rs1_E = 0;
+    D_imm_E=0;
+
+end
 
 always@(posedge clock) begin
+  if(reset)
+    F_address_E_WB <= 32'h01000000;
+  
+  else begin
+    case ((D_WB_pc_jump_F || E_WB_brn_tkn_F))
+      1'b0:F_address_E_WB <= F_address_E_WB + 4;
+      1'b1:F_address_E_WB <= (E_WB_alu_out_F);
+    endcase
+  end
   D_access_size_M_WB <= funct3[1:0];
   // F_address_E_WB
   F_D_address_E_WB <= F_address_E_WB;
@@ -145,6 +162,9 @@ always@(posedge clock) begin
   // D_data_rs2_E_M
   D_E_data_rs2_M <= D_data_rs2_E_M;
 
+  //D_pc_reg1_sel_E
+  //E_pc_reg1_sel_E <= D_pc_reg1_sel_E;
+
   // E_alu_out_M_WB_F 
   E_M_alu_out_WB_F <= E_alu_out_M_WB_F;
   E_WB_alu_out_F <= E_M_alu_out_WB_F;
@@ -164,13 +184,13 @@ end
 /////////////////
 
 //pc counter
-pc_counter pc (
-  .clock(clock),
-  .reset(reset),
-  .alu(E_WB_alu_out_F),
-  .PC_sel((D_WB_pc_jump_F || E_WB_brn_tkn_F)),
-  .pc(F_address_E_WB)
-);
+// pc_counter pc (
+//   .clock(clock),
+//   .reset(reset),
+//   .alu(E_WB_alu_out_F),
+//   .PC_sel((D_WB_pc_jump_F || E_WB_brn_tkn_F)),
+//   .pc(F_address_E_WB)
+// );
 
 //fetch instuction
 imemory imem (
