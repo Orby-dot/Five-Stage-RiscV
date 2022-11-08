@@ -20,7 +20,7 @@ always @(posedge clock) begin
   else
     case (PC_sel)
     1'b0:pc = pc + 4;
-    1'b1:pc = (alu & 32'hfffffffe);//removed LSB due to RISC DOC (refer to jalr)
+    1'b1:pc = (alu);//removed LSB due to RISC DOC (refer to jalr)
     endcase
   //$display("PC = %h   FC = %h ", address,data_out);
   end

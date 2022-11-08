@@ -104,7 +104,13 @@ reg [1:0] D_E_access_size_M_WB;
 reg [1:0] D_M_access_size_WB;
 
 //assign D_access_size_M_WB = funct3[1:0];
+// initial begin
+//   F_address_E_WB
+//   F_D_address_E_WB
+//   F_M_address__WB
+//   F_WB_address_E_WB
 
+// end
 ////////////////////
 // DAISY CHAINING //
 ////////////////////

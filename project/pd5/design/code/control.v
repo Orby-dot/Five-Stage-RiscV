@@ -102,7 +102,7 @@ always @(inst) begin
     //1x011xx
     //J type
     else if(((opcode & 7'b100_1100) == 76) && ((~opcode & 7'b001_0000) == 16 )) begin
-        imm =({{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0})<<1;
+        imm =({{12{inst[31]}}, inst[19:12], inst[20],inst[30:25],inst[24:21],1'b0});
 
         //reg select
         b_sel = 1'b1;//use imm
