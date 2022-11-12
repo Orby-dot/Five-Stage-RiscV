@@ -8,3 +8,4 @@ imemory.v
 pc_counter.v
 register_file.v
 write_back.v
+bypass_excute.v

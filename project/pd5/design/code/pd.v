@@ -28,8 +28,11 @@ reg [4:0]       D_E_addr_rd_WB;
 reg [4:0]       D_M_addr_rd_WB;
 reg [4:0]       D_WB_addr_rd_WB;
 //wire [4:0]      addr_rd;
-wire [4:0]      addr_rs1;
-wire [4:0]      addr_rs2;
+reg [4:0]      D_addr_rs1_E;
+reg [4:0]      D_E_addr_rs1_E;
+
+reg [4:0]      D_addr_rs2_E;
+reg [4:0]      D_E_addr_rs2_E;
 
 wire [2:0]      funct3;
 wire [6:0]      funct7;
@@ -83,7 +86,7 @@ reg [31:0] D_E_data_rs1_E;
 
 reg [31:0] D_data_rs2_E_M;
 reg [31:0] D_E_data_rs2_M;
-reg [31:0] D_M_data_rs3_M;
+reg [31:0] D_M_data_rs2_M;
 
 
 
@@ -107,6 +110,9 @@ reg [31:0]     E_alu_out_M_WB_F;
 reg [31:0]     E_M_alu_out_WB_F;
 reg [31:0]     E_WB_alu_out_F;
 reg [31:0]     E_F_alu_out_F;
+
+wire [31:0] in_a;
+wire [31:0] in_b;
 
 
 //DMEM---------------------------------------------------
@@ -157,6 +163,12 @@ always@(posedge clock) begin
   D_M_addr_rd_WB <= D_E_addr_rd_WB;
   D_WB_addr_rd_WB <= D_M_addr_rd_WB;
 
+  //addr_rs1
+  D_E_addr_rs1_E <= D_addr_rs1_E;
+
+  //addr_rs2
+  D_E_addr_rs2_E <= D_addr_rs2_E;
+
   //imm
   D_E_imm_E <= D_imm_E;
   
@@ -200,7 +212,7 @@ always@(posedge clock) begin
 
   // data_rs2
   D_E_data_rs2_M <= D_data_rs2_E_M;
-  D_M_data_rs3_M <= D_E_data_rs2_M;
+  D_M_data_rs2_M <= D_E_data_rs2_M;
 
   //data_rs1
   D_E_data_rs1_E <= D_data_rs1_E;
@@ -264,8 +276,8 @@ control decode(
 
     .opcode(opcode),
     .rd(D_addr_rd_WB),
-    .rs1(addr_rs1),
-    .rs2(addr_rs2),
+    .rs1(D_addr_rs1_E),
+    .rs2(D_addr_rs2_E),
     .funct3(funct3),
     .funct7(funct7),
     .imm(D_imm_E),
@@ -292,10 +304,10 @@ control decode(
 register_file reg_file(
   .clock(clock),
 
-  .addr_rs1(addr_rs1),
+  .addr_rs1(D_addr_rs1_E),
   .data_rs1(D_data_rs1_E),
 
-  .addr_rs2(addr_rs2),
+  .addr_rs2(D_addr_rs2_E),
   .data_rs2(D_data_rs2_E_M),
 
   .addr_rd(D_WB_addr_rd_WB),
@@ -321,11 +333,40 @@ branch_comp brn_cmpr(
     .br_lt(br_lt)
 );
 
+/*
+ this is needed for the input for alu as there is a lot of endcases
+*/
+bypass_excute by_exc(
+  //address of reg
+  .rs1_decode(D_E_addr_rs1_E),
+  .rs2_decode(D_E_addr_rs1_E),
+  .rd_memory((D_M_write_enable_WB && ~D_M_d_rw_M) ? D_M_addr_rd_WB : 0),
+  .rd_write_back((D_WB_write_enable_WB)?D_WB_addr_rd_WB: 0),
+
+  //values in regs
+  .rs1_data_decode(D_E_data_rs1_E),
+  .rs2_data_decode(D_E_data_rs2_M),
+  .rd_data_memory(D_M_data_rs2_M),
+  .rd_data_write_back(WB_D_data_rd_D),
+
+  //other possible inputs
+  .pc(F_address_E_WB),
+  .imm(D_E_imm_E),
+  .shamt({{27{1'b0}},D_E_shamt_E}),
+
+  //control sigs
+  .pc_reg1_sel(D_E_pc_reg1_sel_E),
+  .imm_rs2_shamt_sel({D_E_b_sel_E,D_E_rs2_shamt_sel_E}),
+
+  //outputs
+  .rs1_data_out(in_a),
+  .rs2_data_out(in_b)
+
+);
 
 ALU alu(
-  .in_a((D_E_pc_reg1_sel_E)? F_address_E_WB: D_E_data_rs1_E ),
-  .in_b((D_E_b_sel_E) ? D_E_imm_E : 
-        (D_E_rs2_shamt_sel_E) ? {{27{1'b0}},D_E_shamt_E} : D_E_data_rs2_M ),
+  .in_a(in_a),
+  .in_b(in_b),
   .control(D_E_alu_sel_E),
   .out(E_alu_out_M_WB_F)
 );
@@ -335,7 +376,7 @@ ALU alu(
 dmemory d_mem(
   .address(E_M_alu_out_WB_F),
   .read_write(D_M_d_rw_M),
-  .data_in(D_M_data_rs3_M),
+  .data_in(D_M_data_rs2_M),
   .access_size(D_E_access_size_M_WB),
   .data_out(M_data_r_WB)
 );

@@ -9,8 +9,8 @@
 `define D_PC                F_D_address_E_WB
 `define D_OPCODE            opcode
 `define D_RD                D_addr_rd_WB
-`define D_RS1               addr_rs1
-`define D_RS2               addr_rs2
+`define D_RS1               D_addr_rs1_E
+`define D_RS2               D_addr_rs2_E
 `define D_FUNCT3            funct3
 `define D_FUNCT7            funct7
 `define D_IMM               D_imm_E
@@ -19,8 +19,8 @@
 `define R_WRITE_ENABLE      write_enable
 `define R_WRITE_DESTINATION D_WB_addr_rd_WB
 `define R_WRITE_DATA        WB_D_data_rd_D
-`define R_READ_RS1          addr_rs1
-`define R_READ_RS2          addr_rs2
+`define R_READ_RS1          D_addr_rs1_E
+`define R_READ_RS2          D_addr_rs2_E
 `define R_READ_RS1_DATA     D_data_rs1_E
 `define R_READ_RS2_DATA     D_data_rs2_E_M
 

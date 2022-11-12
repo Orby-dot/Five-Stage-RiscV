@@ -1,0 +1,5 @@
+/*
+I know i can do this in pd.v but i wanna do it here for better var names. 
+Might move this back into pd.v
+
+*/
