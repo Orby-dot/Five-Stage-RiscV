@@ -340,13 +340,13 @@ bypass_excute by_exc(
   //address of reg
   .rs1_decode(D_E_addr_rs1_E),
   .rs2_decode(D_E_addr_rs1_E),
-  .rd_memory((D_M_write_enable_WB && ~D_M_d_rw_M) ? D_M_addr_rd_WB : 0),
+  .rd_memory((D_M_write_enable_WB) ? D_M_addr_rd_WB : 0),
   .rd_write_back((D_WB_write_enable_WB)?D_WB_addr_rd_WB: 0),
 
   //values in regs
   .rs1_data_decode(D_E_data_rs1_E),
   .rs2_data_decode(D_E_data_rs2_M),
-  .rd_data_memory(D_M_data_rs2_M),
+  .rd_data_memory(E_M_alu_out_WB_F),
   .rd_data_write_back(WB_D_data_rd_D),
 
   //other possible inputs
@@ -376,7 +376,7 @@ ALU alu(
 dmemory d_mem(
   .address(E_M_alu_out_WB_F),
   .read_write(D_M_d_rw_M),
-  .data_in(D_M_data_rs2_M),
+  .data_in((D_WB_write_enable_WB && (D_M_addr_rd_WB == D_WB_addr_rd_WB)) ? WB_data_rd_D : D_M_data_rs2_M),
   .access_size(D_E_access_size_M_WB),
   .data_out(M_data_r_WB)
 );
