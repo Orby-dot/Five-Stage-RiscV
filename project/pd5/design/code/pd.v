@@ -134,6 +134,11 @@ reg [1:0] D_WB_access_size_WB;
 ////////////////////
 // DAISY CHAINING //
 ////////////////////
+
+wire stall; //stall control sig
+
+//if execute is load and its rd is equal to either rs1 or rs2 of decode, and decode is not a store
+assign stall = ((D_E_wb_sel_WB==0) && (D_E_addr_rd_WB == D_addr_rs1_E && D_E_addr_rd_WB != 0) ||(D_E_addr_rd_WB == D_addr_rs2_E && D_E_addr_rd_WB != 0) && (~D_d_rw_M));
 initial begin
     F_address_E_WB = 32'h01000000;
 end
@@ -142,109 +147,221 @@ always@(posedge clock) begin
   if(reset)
     F_address_E_WB <= 32'h01000000;
   
-  else begin
+  else if (~stall) 
+  begin
+
     case ((D_F_pc_jump_F || E_F_brn_tkn_F))
       1'b0:F_address_E_WB <= F_address_E_WB + 4;
       1'b1:F_address_E_WB <= (E_F_alu_out_F);
     endcase
+  
+    D_access_size_M_WB <= funct3[1:0];
+    //address
+    F_D_address_E_WB <= F_address_E_WB;
+    F_E_address_WB <= F_D_address_E_WB;
+    F_M_address_WB <= F_E_address_WB;
+    F_WB_address_WB <= F_M_address_WB;
+
+    //inst
+    D_inst_D = F_inst_D;
+
+    //addr_rd
+    D_E_addr_rd_WB <= D_addr_rd_WB;
+    D_M_addr_rd_WB <= D_E_addr_rd_WB;
+    D_WB_addr_rd_WB <= D_M_addr_rd_WB;
+
+    //addr_rs1
+    D_E_addr_rs1_E <= D_addr_rs1_E;
+
+    //addr_rs2
+    D_E_addr_rs2_E <= D_addr_rs2_E;
+
+    //imm
+    D_E_imm_E <= D_imm_E;
+    
+    //shamt
+    D_E_shamt_E = D_shamt_E;
+
+    //b_sel
+    D_E_b_sel_E <= D_b_sel_E;
+
+    //alu_sel
+    D_E_alu_sel_E <= D_alu_sel_E;
+
+    //pc_reg1_sel
+    D_E_pc_reg1_sel_E <= D_pc_reg1_sel_E;
+
+    //pc_jump
+    D_E_pc_jump_F <= D_pc_jump_F;
+    D_M_pc_jump_F <= D_E_pc_jump_F;
+    D_WB_pc_jump_F <= D_M_pc_jump_F;
+    D_F_pc_jump_F <= D_WB_pc_jump_F;
+
+    //rs2_shamt_sel
+    D_E_rs2_shamt_sel_E <= D_rs2_shamt_sel_E;
+
+    //unsign
+    D_E_unsign_E <= D_unsign_E;
+
+    // wb_sel
+    D_E_wb_sel_WB <= D_wb_sel_WB;
+    D_M_wb_sel_WB <= D_E_wb_sel_WB;
+    D_WB_wb_sel_WB <= D_M_wb_sel_WB;
+
+    //write_enable
+    D_E_write_enable_WB <= D_write_enable_WB;
+    D_M_write_enable_WB <= D_E_write_enable_WB;
+    D_WB_write_enable_WB <= D_M_write_enable_WB;
+
+    //d_rw
+    D_E_d_rw_M <= D_d_rw_M;
+    D_M_d_rw_M <= D_E_d_rw_M;
+
+    // data_rs2
+    D_E_data_rs2_M <= D_data_rs2_E_M;
+    D_M_data_rs2_M <= D_E_data_rs2_M;
+
+    //data_rs1
+    D_E_data_rs1_E <= D_data_rs1_E;
+
+    //alu_out 
+    E_M_alu_out_WB_F <= E_alu_out_M_WB_F;
+    E_WB_alu_out_F <= E_M_alu_out_WB_F;
+    E_F_alu_out_F <= E_WB_alu_out_F;
+
+    //data_r
+    M_WB_data_r_WB <= M_data_r_WB;
+
+    //brn_tkn
+    E_M_brn_tkn_F <= E_brn_tkn_F;
+    E_WB_brn_tkn_F <= E_M_brn_tkn_F;
+    E_F_brn_tkn_F <= E_WB_brn_tkn_F;
+
+    //brn_enable
+    D_E_brn_enable_E <= D_brn_enable_E;
+
+    //brn_signal
+    D_E_brn_signal_E <= D_brn_signal_E;
+
+    //data_rd
+    WB_F_data_rd_D <= WB_data_rd_D;
+    WB_D_data_rd_D <= WB_F_data_rd_D;
+    
+
+    //access_size
+    D_E_access_size_M_WB <= D_access_size_M_WB;
+    D_M_access_size_WB <= D_E_access_size_M_WB;
+    D_WB_access_size_WB <= D_M_access_size_WB;
   end
-  D_access_size_M_WB <= funct3[1:0];
-  //address
-  F_D_address_E_WB <= F_address_E_WB;
-  F_E_address_WB <= F_D_address_E_WB;
-  F_M_address_WB <= F_E_address_WB;
-  F_WB_address_WB <= F_M_address_WB;
 
-  //inst
-  D_inst_D = F_inst_D;
+  else begin
+    //not changing pc 
+    // case ((D_F_pc_jump_F || E_F_brn_tkn_F))
+    //   1'b0:F_address_E_WB <= F_address_E_WB + 4;
+    //   1'b1:F_address_E_WB <= (E_F_alu_out_F);
+    // endcase
 
-  //addr_rd
-  D_E_addr_rd_WB <= D_addr_rd_WB;
-  D_M_addr_rd_WB <= D_E_addr_rd_WB;
-  D_WB_addr_rd_WB <= D_M_addr_rd_WB;
-
-  //addr_rs1
-  D_E_addr_rs1_E <= D_addr_rs1_E;
-
-  //addr_rs2
-  D_E_addr_rs2_E <= D_addr_rs2_E;
-
-  //imm
-  D_E_imm_E <= D_imm_E;
   
-  //shamt
-  D_E_shamt_E = D_shamt_E;
+    D_access_size_M_WB <= funct3[1:0];
+    //address
+    //not moving the address
+    // F_D_address_E_WB <= F_address_E_WB;
+    // F_E_address_WB <= F_D_address_E_WB;
+    F_M_address_WB <= F_E_address_WB;
+    F_WB_address_WB <= F_M_address_WB;
 
-  //b_sel
-  D_E_b_sel_E <= D_b_sel_E;
+    //inst
+    //D_inst_D = F_inst_D;
 
-  //alu_sel
-  D_E_alu_sel_E <= D_alu_sel_E;
+    //addr_rd
+    D_E_addr_rd_WB <= 0;//nop
+    D_M_addr_rd_WB <= D_E_addr_rd_WB;
+    D_WB_addr_rd_WB <= D_M_addr_rd_WB;
 
-  //pc_reg1_sel
-  D_E_pc_reg1_sel_E <= D_pc_reg1_sel_E;
+    //addr_rs1
+    D_E_addr_rs1_E <= 0;
 
-  //pc_jump
-  D_E_pc_jump_F <= D_pc_jump_F;
-  D_M_pc_jump_F <= D_E_pc_jump_F;
-  D_WB_pc_jump_F <= D_M_pc_jump_F;
-  D_F_pc_jump_F <= D_WB_pc_jump_F;
+    //addr_rs2
+    D_E_addr_rs2_E <= 0;
 
-  //rs2_shamt_sel
-  D_E_rs2_shamt_sel_E <= D_rs2_shamt_sel_E;
+    //imm
+    D_E_imm_E <= 0;
+    
+    //shamt
+    D_E_shamt_E = 0;
 
-  //unsign
-  D_E_unsign_E <= D_unsign_E;
+    //b_sel
+    D_E_b_sel_E <= 0;
 
-  // wb_sel
-  D_E_wb_sel_WB <= D_wb_sel_WB;
-  D_M_wb_sel_WB <= D_E_wb_sel_WB;
-  D_WB_wb_sel_WB <= D_M_wb_sel_WB;
+    //alu_sel
+    D_E_alu_sel_E <= 0;
 
-  //write_enable
-  D_E_write_enable_WB <= D_write_enable_WB;
-  D_M_write_enable_WB <= D_E_write_enable_WB;
-  D_WB_write_enable_WB <= D_M_write_enable_WB;
+    //pc_reg1_sel
+    D_E_pc_reg1_sel_E <= 0;
 
-  //d_rw
-  D_E_d_rw_M <= D_d_rw_M;
-  D_M_d_rw_M <= D_E_d_rw_M;
+    //pc_jump
+    D_E_pc_jump_F <= 0;
+    D_M_pc_jump_F <= D_E_pc_jump_F;
+    D_WB_pc_jump_F <= D_M_pc_jump_F;
+    D_F_pc_jump_F <= D_WB_pc_jump_F;
 
-  // data_rs2
-  D_E_data_rs2_M <= D_data_rs2_E_M;
-  D_M_data_rs2_M <= D_E_data_rs2_M;
+    //rs2_shamt_sel
+    D_E_rs2_shamt_sel_E <= 0;
 
-  //data_rs1
-  D_E_data_rs1_E <= D_data_rs1_E;
+    //unsign
+    D_E_unsign_E <= 0;
 
-  //alu_out 
-  E_M_alu_out_WB_F <= E_alu_out_M_WB_F;
-  E_WB_alu_out_F <= E_M_alu_out_WB_F;
-  E_F_alu_out_F <= E_WB_alu_out_F;
+    // wb_sel
+    D_E_wb_sel_WB <= 0;
+    D_M_wb_sel_WB <= D_E_wb_sel_WB;
+    D_WB_wb_sel_WB <= D_M_wb_sel_WB;
 
-  //data_r
-  M_WB_data_r_WB <= M_data_r_WB;
+    //write_enable
+    D_E_write_enable_WB <= 0;
+    D_M_write_enable_WB <= D_E_write_enable_WB;
+    D_WB_write_enable_WB <= D_M_write_enable_WB;
 
-  //brn_tkn
-  E_M_brn_tkn_F <= E_brn_tkn_F;
-  E_WB_brn_tkn_F <= E_M_brn_tkn_F;
-  E_F_brn_tkn_F <= E_WB_brn_tkn_F;
+    //d_rw
+    D_E_d_rw_M <= 0;
+    D_M_d_rw_M <= D_E_d_rw_M;
 
-  //brn_enable
-  D_E_brn_enable_E <= D_brn_enable_E;
+    // data_rs2
+    D_E_data_rs2_M <= 0;
+    D_M_data_rs2_M <= D_E_data_rs2_M;
 
-  //brn_signal
-  D_E_brn_signal_E <= D_brn_signal_E;
+    //data_rs1
+    D_E_data_rs1_E <= 0;
 
-  //data_rd
-  WB_F_data_rd_D <= WB_data_rd_D;
-  WB_D_data_rd_D <= WB_F_data_rd_D;
-  
+    //alu_out 
+    E_M_alu_out_WB_F <= E_alu_out_M_WB_F;
+    E_WB_alu_out_F <= E_M_alu_out_WB_F;
+    E_F_alu_out_F <= E_WB_alu_out_F;
 
-  //access_size
-  D_E_access_size_M_WB <= D_access_size_M_WB;
-  D_M_access_size_WB <= D_E_access_size_M_WB;
-  D_WB_access_size_WB <= D_M_access_size_WB;
+    //data_r
+    M_WB_data_r_WB <= M_data_r_WB;
+
+    //brn_tkn
+    E_M_brn_tkn_F <= E_brn_tkn_F;
+    E_WB_brn_tkn_F <= E_M_brn_tkn_F;
+    E_F_brn_tkn_F <= E_WB_brn_tkn_F;
+
+    //brn_enable
+    D_E_brn_enable_E <= 0;
+
+    //brn_signal
+    D_E_brn_signal_E <= 0;
+
+    //data_rd
+    WB_F_data_rd_D <= WB_data_rd_D;
+    WB_D_data_rd_D <= WB_F_data_rd_D;
+    
+
+    //access_size
+    D_E_access_size_M_WB <= 0;
+    D_M_access_size_WB <= D_E_access_size_M_WB;
+    D_WB_access_size_WB <= D_M_access_size_WB;
+
+  end
 end
 
 /////////////////
@@ -311,7 +428,7 @@ register_file reg_file(
   .data_rs2(D_data_rs2_E_M),
 
   .addr_rd(D_WB_addr_rd_WB),
-  .data_rd(WB_D_data_rd_D),
+  .data_rd(WB_data_rd_D),
   .write_enable(D_WB_write_enable_WB)
 
 );
@@ -347,7 +464,7 @@ bypass_excute by_exc(
   .rs1_data_decode(D_E_data_rs1_E),
   .rs2_data_decode(D_E_data_rs2_M),
   .rd_data_memory(E_M_alu_out_WB_F),
-  .rd_data_write_back(WB_D_data_rd_D),
+  .rd_data_write_back(WB_data_rd_D),
 
   //other possible inputs
   .pc(F_address_E_WB),
