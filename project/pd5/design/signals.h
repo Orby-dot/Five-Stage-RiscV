@@ -18,7 +18,7 @@
 
 `define R_WRITE_ENABLE      write_enable
 `define R_WRITE_DESTINATION D_WB_addr_rd_WB
-`define R_WRITE_DATA        WB_D_data_rd_D
+`define R_WRITE_DATA        WB_data_rd_D
 `define R_READ_RS1          D_addr_rs1_E
 `define R_READ_RS2          D_addr_rs2_E
 `define R_READ_RS1_DATA     D_data_rs1_E

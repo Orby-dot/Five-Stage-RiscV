@@ -33,6 +33,7 @@ reg [4:0]      D_E_addr_rs1_E;
 
 reg [4:0]      D_addr_rs2_E;
 reg [4:0]      D_E_addr_rs2_E;
+reg [4:0]      D_M_addr_rs2_E;
 
 wire [2:0]      funct3;
 wire [6:0]      funct7;
@@ -138,9 +139,9 @@ reg [1:0] D_WB_access_size_WB;
 wire stall; //stall control sig
 
 //if execute is load and its rd is equal to either rs1 or rs2 of decode, and decode is not a store
-assign stall = ((D_E_wb_sel_WB==0) && (D_E_addr_rd_WB == D_addr_rs1_E && D_E_addr_rd_WB != 0) ||(D_E_addr_rd_WB == D_addr_rs2_E && D_E_addr_rd_WB != 0) && (~D_d_rw_M));
+assign stall = ((D_E_wb_sel_WB==0) && ((D_E_addr_rd_WB == D_addr_rs1_E && D_E_addr_rd_WB != 0) ||(D_E_addr_rd_WB == D_addr_rs2_E && D_E_addr_rd_WB != 0)) && (~D_d_rw_M));
 initial begin
-    F_address_E_WB = 32'h01000000;
+    F_address_E_WB = 32'h01000000-4;
 end
 
 always@(posedge clock) begin
@@ -175,6 +176,7 @@ always@(posedge clock) begin
 
     //addr_rs2
     D_E_addr_rs2_E <= D_addr_rs2_E;
+    D_M_addr_rs2_E <= D_E_addr_rs2_E;
 
     //imm
     D_E_imm_E <= D_imm_E;
@@ -261,7 +263,7 @@ always@(posedge clock) begin
     //   1'b1:F_address_E_WB <= (E_F_alu_out_F);
     // endcase
 
-  
+    $display("STALL at %h", F_D_address_E_WB);
     D_access_size_M_WB <= funct3[1:0];
     //address
     //not moving the address
@@ -283,6 +285,7 @@ always@(posedge clock) begin
 
     //addr_rs2
     D_E_addr_rs2_E <= 0;
+    D_M_addr_rs2_E <= D_E_addr_rs2_E;
 
     //imm
     D_E_imm_E <= 0;
@@ -456,7 +459,7 @@ branch_comp brn_cmpr(
 bypass_excute by_exc(
   //address of reg
   .rs1_decode(D_E_addr_rs1_E),
-  .rs2_decode(D_E_addr_rs1_E),
+  .rs2_decode(D_E_addr_rs2_E),
   .rd_memory((D_M_write_enable_WB) ? D_M_addr_rd_WB : 0),
   .rd_write_back((D_WB_write_enable_WB)?D_WB_addr_rd_WB: 0),
 
@@ -493,7 +496,7 @@ ALU alu(
 dmemory d_mem(
   .address(E_M_alu_out_WB_F),
   .read_write(D_M_d_rw_M),
-  .data_in((D_WB_write_enable_WB && (D_M_addr_rd_WB == D_WB_addr_rd_WB)) ? WB_data_rd_D : D_M_data_rs2_M),
+  .data_in((D_WB_write_enable_WB && (D_M_addr_rs2_E == D_WB_addr_rd_WB)) ? WB_data_rd_D : D_M_data_rs2_M),
   .access_size(D_E_access_size_M_WB),
   .data_out(M_data_r_WB)
 );

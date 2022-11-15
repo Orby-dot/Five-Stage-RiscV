@@ -31,7 +31,7 @@ assign data_rs2 = (addr_rs2 == 0) ?  0: reg_mem[addr_rs2-1]; //rs2
 //loads all reg with 0 except for x2 which will be the stack pointer
 integer x;
 initial begin
-  reg_mem[0] = `MEM_DEPTH + 32'h01000000;
+  reg_mem[0] = 0;
   reg_mem[1] = `MEM_DEPTH + 32'h01000000;
   for (x = 2; x<32 ; x = x+1)begin 
     reg_mem[x] = 0;

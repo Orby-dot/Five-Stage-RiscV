@@ -191,7 +191,7 @@ always @(inst) begin
         end
         //xx1xxxx 
         else begin
-            alu_sel = {(( ~opcode[5] & (funct3[0]) & funct7[5] ) || ((funct3 == 3'b011) && ~opcode[5]) ), funct3}; //control bits for alu
+            alu_sel = {((~opcode[5] && (((funct7[5]) && funct3 == 3'b101)|| funct3 == 3'b011))||(opcode[5] && ~funct3[0] && funct7[5])), funct3}; //control bits for alu
             rs2_shamt_sel = (funct3[0]) && ~(funct3[1] & funct3[2]);
         end
 

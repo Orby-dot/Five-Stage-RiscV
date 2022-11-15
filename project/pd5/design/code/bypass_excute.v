@@ -35,10 +35,10 @@ always@(*) begin
         rs1_data_out = pc;
 
     else begin
-        if(rs1_decode == rd_memory)
+        if(rs1_decode == rd_memory && rs1_decode !=0 )
             rs1_data_out = rd_data_memory;
         
-        else if (rs1_decode == rd_write_back)
+        else if (rs1_decode == rd_write_back && rs1_decode !=0 )
             rs1_data_out = rd_data_write_back;
 
         else
@@ -52,9 +52,9 @@ always@(*) begin
         2'b10, 2'b11 : rs2_data_out = imm;
         2'b01: rs2_data_out = shamt;
         default: begin 
-            if(rs2_decode == rd_memory)
+            if(rs2_decode == rd_memory && rs2_decode !=0 )
                 rs2_data_out = rd_data_memory;
-            else if (rs2_decode == rd_write_back)
+            else if (rs2_decode == rd_write_back && rs2_decode !=0 )
                 rs2_data_out = rd_data_write_back;
             else
                 rs2_data_out = rs2_data_decode;

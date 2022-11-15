@@ -1,6 +1,6 @@
 /* CONTROL LIST
     0000 = add
-    default (0100)= sub
+    default (1000)= sub
     0001 = SHIFT L signed
     0011 = SHIFT L unsigned
     0101 = SHIFT R normal 
