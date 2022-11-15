@@ -57,7 +57,7 @@ always@(*) begin
             else if (rs2_decode == rd_write_back)
                 rs2_data_out = rd_data_write_back;
             else
-                rs1_data_out = rs2_data_decode;
+                rs2_data_out = rs2_data_decode;
         end 
 
     endcase
