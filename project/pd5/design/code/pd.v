@@ -152,14 +152,10 @@ always@(posedge clock) begin
   begin
 
     //if (~(D_pc_jump_F || E_brn_tkn_F))//scrap the other daisy chained signals
-    
-      
 
-
-  
       D_access_size_M_WB <= funct3[1:0];
       //address
-      F_address_E_WB <= (D_E_pc_jump_F || E_brn_tkn_F) ? E_F_alu_out_F : F_address_E_WB + 4;
+      F_address_E_WB <= (D_E_pc_jump_F || E_brn_tkn_F) ? E_alu_out_M_WB_F : F_address_E_WB + 4;
       F_D_address_E_WB <= (D_E_pc_jump_F || E_brn_tkn_F) ? 0 : F_address_E_WB;
       F_E_address_WB <= (D_E_pc_jump_F || E_brn_tkn_F) ? 0 : F_D_address_E_WB;
       F_M_address_WB <= F_E_address_WB;
@@ -471,7 +467,7 @@ bypass_excute by_exc(
   .rd_data_write_back(WB_data_rd_D),
 
   //other possible inputs
-  .pc(F_address_E_WB),
+  .pc(F_E_address_WB),
   .imm(D_E_imm_E),
   .shamt({{27{1'b0}},D_E_shamt_E}),
 
