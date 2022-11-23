@@ -4,7 +4,7 @@ module imemory
   input wire    [31:0]    address,
   input wire              read_write,
   input wire    [31:0]    data_in,
-  output wire   [31:0]    data_out
+  output reg   [31:0]    data_out
 );
 
 //8 byte chunks

@@ -10,15 +10,15 @@ module register_file
 
   //Rs1
   input wire    [4:0]    addr_rs1,
-  output reg   [31:0]    data_rs1,
+  output wire   [31:0]    data_rs1,
 
   //Rs2
   input wire    [4:0]    addr_rs2,
-  output reg   [31:0]    data_rs2,
+  output wire   [31:0]    data_rs2,
 
   //Rd
   input wire    [4:0]    addr_rd,
-  input reg     [31:0]   data_rd,
+  input wire     [31:0]   data_rd,
   input wire             write_enable
 
 );
@@ -32,7 +32,8 @@ assign data_rs2 = (addr_rs2 == 0) ?  0: reg_mem[addr_rs2-1]; //rs2
 integer x;
 initial begin
   reg_mem[0] = 0;
-  reg_mem[1] = `MEM_DEPTH + 32'h01000000;
+  //reg_mem[1] = `MEM_DEPTH + 32'h01000000;
+  reg_mem[1] = 1048576 + 32'h01000000;
   for (x = 2; x<32 ; x = x+1)begin 
     reg_mem[x] = 0;
   end

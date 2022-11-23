@@ -7,14 +7,14 @@ module control (
     input wire [31:0]   inst,
 
     //probes
-    output reg [6:0]   opcode,
-    output reg [4:0]   rd,
-    output reg [4:0]   rs1,
-    output reg [4:0]   rs2,
-    output reg [2:0]   funct3,
-    output reg [6:0]   funct7,
+    output wire [6:0]   opcode,
+    output wire [4:0]   rd,
+    output wire [4:0]   rs1,
+    output wire [4:0]   rs2,
+    output wire [2:0]   funct3,
+    output wire [6:0]   funct7,
     output reg [31:0]  imm,
-    output reg [4:0]   shamt,
+    output wire [4:0]   shamt,
 
     //control signals
         //Reg signals
@@ -25,7 +25,7 @@ module control (
     output reg [3:0]   alu_sel,
         //branch
     output reg         pc_jump,   //forces pc to jump to what alu calculates
-    output reg         unsign,
+    output wire         unsign,
     output reg [1:0]   brn_control, //tells brn control which branch to take
     output reg         brn_enable, //if 1 = enables brk_tk to be 1 if branch is taken
         //memory

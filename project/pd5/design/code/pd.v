@@ -18,74 +18,74 @@ reg [31:0]     F_WB_address_WB;
 wire           read_write;//unused
 wire [31:0]    data_in;//unused
 
-reg [31:0]     F_inst_D;  // from imem module
+wire [31:0]     F_inst_D;  // from imem module
 reg [31:0]     D_inst_D;
 //DECODE
 wire [6:0]      opcode;
 
-reg [4:0]       D_addr_rd_WB;
+wire [4:0]       D_addr_rd_WB;
 reg [4:0]       D_E_addr_rd_WB;
 reg [4:0]       D_M_addr_rd_WB;
 reg [4:0]       D_WB_addr_rd_WB;
 //wire [4:0]      addr_rd;
-reg [4:0]      D_addr_rs1_E;
+wire [4:0]      D_addr_rs1_E;
 reg [4:0]      D_E_addr_rs1_E;
 
-reg [4:0]      D_addr_rs2_E;
+wire [4:0]      D_addr_rs2_E;
 reg [4:0]      D_E_addr_rs2_E;
 reg [4:0]      D_M_addr_rs2_E;
 
 wire [2:0]      funct3;
 wire [6:0]      funct7;
 
-reg [31:0]      D_imm_E;
+wire [31:0]      D_imm_E;
 reg [31:0]      D_E_imm_E;
 
-reg [4:0]       D_shamt_E;
+wire [4:0]       D_shamt_E;
 reg [4:0]       D_E_shamt_E;
 
-reg             D_b_sel_E;
+wire             D_b_sel_E;
 reg             D_E_b_sel_E;
 
-reg [3:0]       D_alu_sel_E;
+wire [3:0]       D_alu_sel_E;
 reg [3:0]       D_E_alu_sel_E;
 
-reg             D_pc_reg1_sel_E;
+wire             D_pc_reg1_sel_E;
 reg             D_E_pc_reg1_sel_E;
 
-reg             D_pc_jump_F;  // daisy chained through remaining stages
+wire             D_pc_jump_F;  // daisy chained through remaining stages
 reg             D_E_pc_jump_F;
 reg             D_M_pc_jump_F;
 reg             D_WB_pc_jump_F;
 reg             D_F_pc_jump_F;
 
 
-reg             D_rs2_shamt_sel_E;
+wire             D_rs2_shamt_sel_E;
 reg             D_E_rs2_shamt_sel_E;
 
-reg             D_unsign_E;
+wire             D_unsign_E;
 reg             D_E_unsign_E; 
 
-reg [1:0]       D_wb_sel_WB;
+wire [1:0]       D_wb_sel_WB;
 reg [1:0]       D_E_wb_sel_WB;
 reg [1:0]       D_M_wb_sel_WB;
 reg [1:0]       D_WB_wb_sel_WB;
 
-reg             D_write_enable_WB;
+wire             D_write_enable_WB;
 reg             D_E_write_enable_WB;
 reg             D_M_write_enable_WB;
 reg             D_WB_write_enable_WB;
 
-reg             D_d_rw_M;
+wire             D_d_rw_M;
 reg             D_E_d_rw_M;
 reg             D_M_d_rw_M;
 
 //---------------
 //REG FILE---------------------------------------------
-reg [31:0] D_data_rs1_E;
+wire [31:0] D_data_rs1_E;
 reg [31:0] D_E_data_rs1_E;
 
-reg [31:0] D_data_rs2_E_M;
+wire [31:0] D_data_rs2_E_M;
 reg [31:0] D_E_data_rs2_M;
 reg [31:0] D_M_data_rs2_M;
 
@@ -95,19 +95,19 @@ reg [31:0] D_M_data_rs2_M;
 wire br_eq;
 wire br_lt;
 
-reg E_brn_tkn_F;
+wire E_brn_tkn_F;
 reg E_M_brn_tkn_F;
 reg E_WB_brn_tkn_F;
 reg E_F_brn_tkn_F;
 
-reg D_brn_enable_E;
+wire D_brn_enable_E;
 reg D_E_brn_enable_E;
 
-reg [1:0] D_brn_signal_E;
+wire [1:0] D_brn_signal_E;
 reg [1:0] D_E_brn_signal_E;
 
 //ALU-----------------------------------------------
-reg [31:0]     E_alu_out_M_WB_F;
+wire [31:0]     E_alu_out_M_WB_F;
 reg [31:0]     E_M_alu_out_WB_F;
 reg [31:0]     E_WB_alu_out_F;
 reg [31:0]     E_F_alu_out_F;
@@ -117,12 +117,12 @@ wire [31:0] in_b;
 
 
 //DMEM---------------------------------------------------
-reg [31:0]    M_data_r_WB;
+wire [31:0]    M_data_r_WB;
 reg [31:0]    M_WB_data_r_WB;
 
 
 //WRITE BACK-------------------------------------- 
-reg [31:0]   WB_data_rd_D;   // output wb
+wire [31:0]   WB_data_rd_D;   // output wb
 reg [31:0]   WB_F_data_rd_D;
 reg [31:0]   WB_D_data_rd_D;
 
@@ -381,7 +381,6 @@ imemory imem (
   .address(F_address_E_WB),
   .read_write(1'b0),//hard coded for imem
   .data_in(data_in),
-
   .data_out(F_inst_D)
 );
 
